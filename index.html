@@ -678,25 +678,7 @@ function startAutoCheck(){
   },60000);
 }
 
-function toggleSoftSetting(){
-  const panel=document.getElementById('soft-setting-panel');
-  const isOpen=panel.style.display!=='none';
-  panel.style.display=isOpen?'none':'block';
-  if(!isOpen){
-    const v=loadSoftRatio();
-    document.getElementById('soft-ratio-slider').value=v;
-    document.getElementById('soft-ratio-label').textContent=v+'杯に1回';
-  }
-}
-
-function updateSoftRatio(val){
-  const v=parseInt(val);
-  saveSoftRatio(v);
-  document.getElementById('soft-ratio-label').textContent=v+'杯に1回';
-  renderDrinkLog();
-}
-
-
+function toggleExtra(key){
   if(!session)return;
   if(!session.extras)session.extras={};
   session.extras[key]=!session.extras[key];saveSession(session);renderExtraChecks();
