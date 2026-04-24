@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🍺 二日酔いトラッカー</title>
+<title>🍺 飲みすぎチェッカー</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -198,7 +198,7 @@ body.lv4 .section-title{animation:flicker 1s infinite}
 <div class="app">
 
 <div id="s-home" class="screen active">
-  <div class="app-title">🍺 二日酔いトラッカー</div>
+  <div class="app-title">🍺 飲みすぎチェッカー</div>
   <div id="pending-notice" style="display:none;margin-bottom:1rem"></div>
   <div class="tabs">
     <button class="tab active" onclick="homeTab('start')">今夜</button>
@@ -208,13 +208,16 @@ body.lv4 .section-title{animation:flicker 1s infinite}
     <button class="tab" onclick="homeTab('settings')">⚙️</button>
   </div>
   <div id="ht-start">
-    <div id="level-display" style="display:none"></div>
     <div id="streak-display" style="display:none"></div>
     <div id="morning-comment" style="display:none"></div>
     <div id="weekly-summary" style="display:none"></div>
     <div id="usual-set" style="display:none"></div>
     <button class="big-btn primary" onclick="startSession()" style="font-size:18px;padding:20px">🎉 飲み会をはじめる</button>
-    <p class="muted" style="text-align:center;margin-top:12px">ボタンを押してから飲み始めてください</p>
+    <p class="muted" style="text-align:center;margin-top:8px">ボタンを押してから飲み始めてください</p>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="big-btn" onclick="openQuickRecord()" style="font-size:13px;padding:12px;flex:1">⚡ ザックリ記録</button>
+      <button class="big-btn" onclick="togglePastForm();homeTab('history')" style="font-size:13px;padding:12px;flex:1">📝 詳細に記録</button>
+    </div>
   </div>
   <div id="ht-history" style="display:none">
     <button class="big-btn" onclick="togglePastForm()" id="past-form-toggle-btn" style="margin-bottom:12px">📝 過去の記録を追加する</button>
@@ -314,7 +317,7 @@ body.lv4 .section-title{animation:flicker 1s infinite}
 
 <div id="s-review" class="screen">
   <div class="app-title">📋 振り返り</div>
-  <div class="step-label" id="review-step-label">ステップ 1 / 2</div>
+  <div class="step-label" id="review-step-label">ステップ 1 / 3</div>
   <div id="step-hangover">
     <div style="font-size:16px;font-weight:700;margin-bottom:4px">翌朝の体の状態は？</div>
     <div class="muted" id="hov-summary" style="margin-bottom:12px"></div>
@@ -335,7 +338,67 @@ body.lv4 .section-title{animation:flicker 1s infinite}
       <button class="h-btn ng" onclick="setMemory(3)">⬛ ほぼ覚えてない</button>
     </div>
   </div>
+  <div id="step-regret" style="display:none">
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px">昨夜の後悔は？</div>
+    <div class="muted" style="margin-bottom:12px">複数選択OK、なければスキップ</div>
+    <div id="regret-options" class="check-row" style="margin-bottom:12px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="big-btn" onclick="finalizeWithRegrets([])">後悔なし😊</button>
+      <button class="big-btn primary" onclick="saveRegrets()">保存する</button>
+    </div>
+  </div>
   <button class="big-btn" onclick="skipReview()" style="margin-top:12px">あとで記録する</button>
+</div>
+
+<div id="s-quick" class="screen">
+  <div class="app-title">⚡ ザックリ記録</div>
+  <div class="muted" style="text-align:center;margin-bottom:1rem">30秒で完了。詳細な杯数は不要です</div>
+  <div class="label">いつ飲んだ？</div>
+  <div class="hangover-grid" style="margin-bottom:12px">
+    <button class="h-btn" id="q-when-today" onclick="setQuickWhen('today')">今日</button>
+    <button class="h-btn" id="q-when-yesterday" onclick="setQuickWhen('yesterday')">昨日</button>
+  </div>
+  <input type="date" id="q-custom-date" style="width:100%;font-size:14px;padding:8px 10px;border:2px solid var(--border);border-radius:10px;outline:none;background:var(--surface);color:var(--text);font-family:var(--font);margin-bottom:12px;display:none">
+  <button class="muted" onclick="toggleQuickCustomDate()" style="background:none;border:none;font-size:12px;cursor:pointer;margin-bottom:12px;text-decoration:underline;color:var(--text2)">他の日付を選ぶ</button>
+
+  <div class="label">どのくらい飲んだ？</div>
+  <div style="display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px">
+    <button class="h-btn ok" id="q-amt-light" onclick="setQuickAmount('light')">🍺 少なめ（1〜3杯程度）</button>
+    <button class="h-btn" id="q-amt-normal" onclick="setQuickAmount('normal')" style="background:#fff8e1;border-color:#ffd166;color:#7a5a00">🍻 普通（4〜6杯程度）</button>
+    <button class="h-btn ng" id="q-amt-heavy" onclick="setQuickAmount('heavy')">💀 多め（7杯以上）</button>
+  </div>
+
+  <div class="label">翌朝は？</div>
+  <div class="hangover-grid" style="margin-bottom:12px">
+    <button class="h-btn ok" id="q-h-ok" onclick="setQuickHangover(0)">😊 問題なし</button>
+    <button class="h-btn ok" id="q-h-tired" onclick="setQuickHangover(1)">😪 少しだるい</button>
+    <button class="h-btn ng" id="q-h-pain" onclick="setQuickHangover(2)">🤕 頭が痛い</button>
+    <button class="h-btn ng" id="q-h-worst" onclick="setQuickHangover(3)">💀 最悪</button>
+  </div>
+
+  <div class="label">記憶は？</div>
+  <div class="hangover-grid" style="margin-bottom:16px">
+    <button class="h-btn ok" id="q-m-all" onclick="setQuickMemory(0)">✅ 覚えてる</button>
+    <button class="h-btn ok" id="q-m-part" onclick="setQuickMemory(1)">🤔 ところどころ</button>
+    <button class="h-btn ng" id="q-m-vague" onclick="setQuickMemory(2)">😵 曖昧</button>
+    <button class="h-btn ng" id="q-m-none" onclick="setQuickMemory(3)">⬛ ほぼない</button>
+  </div>
+
+  <div class="label">後悔したこと（任意）</div>
+  <div id="q-regret-options" class="check-row" style="margin-bottom:16px"></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <button class="big-btn" onclick="showScreen('s-home')">キャンセル</button>
+    <button class="big-btn primary" onclick="saveQuickRecord()">保存する</button>
+  </div>
+</div>
+
+<div id="s-scene" class="screen">
+  <div class="app-title">🎭 今夜のシーンは？</div>
+  <div class="muted" style="text-align:center;margin-bottom:1rem">シーンで分けて分析できます</div>
+  <div id="scene-options" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem"></div>
+  <button class="big-btn" onclick="startSessionWithScene(null)" style="margin-bottom:8px">シーンなしで開始</button>
+  <button class="muted" onclick="showScreen('s-home')" style="background:none;border:none;cursor:pointer;width:100%;padding:8px;font-family:var(--font);font-size:13px">キャンセル</button>
 </div>
 
 </div>
@@ -348,6 +411,37 @@ const AUTO_TIMEOUT=5*60*60*1000;
 const SOFT_DRINKS=new Set(['ソフトドリンク']);
 const ALCO_MAP={'ビール':20,'ハイボール':14,'日本酒':22,'ワイン':18,'チューハイ':14,'焼酎':20,'カクテル':10,'梅酒':12,'テキーラ':20};
 const DEFAULT_ALCO=15;
+
+// シーン定義
+const SCENES=[
+  {id:'sessetai',icon:'💼',label:'接待・会食'},
+  {id:'company',icon:'🏢',label:'会社の飲み会'},
+  {id:'friends',icon:'👥',label:'友達と'},
+  {id:'date',icon:'💑',label:'デート'},
+  {id:'family',icon:'👨‍👩‍👧',label:'家族・親戚'},
+  {id:'home',icon:'🏠',label:'家飲み'},
+  {id:'solo',icon:'🧘',label:'一人飲み'},
+  {id:'celebration',icon:'🎉',label:'お祝い'}
+];
+
+// 後悔ログ定義
+const REGRETS=[
+  {id:'wallet',icon:'👛',label:'財布を失くした'},
+  {id:'phone',icon:'📱',label:'スマホを失くした'},
+  {id:'umbrella',icon:'☂️',label:'傘を失くした'},
+  {id:'item',icon:'🎒',label:'他の物を失くした'},
+  {id:'line',icon:'💬',label:'LINE誤爆・後悔メッセージ'},
+  {id:'call',icon:'📞',label:'電話かけすぎ'},
+  {id:'sns',icon:'🐦',label:'SNSに変な投稿'},
+  {id:'fight',icon:'💢',label:'人と揉めた'},
+  {id:'taxi',icon:'🚕',label:'タクシー代使いすぎ'},
+  {id:'eat',icon:'🍜',label:'締めラーメン食べた'},
+  {id:'miss',icon:'🚃',label:'終電逃した'},
+  {id:'work',icon:'📉',label:'翌日仕事に影響'},
+  {id:'health',icon:'🤢',label:'体調崩した'},
+  {id:'money',icon:'💸',label:'お金使いすぎ'},
+  {id:'nofault',icon:'😅',label:'記憶がないから分からない'}
+];
 
 // キャラクター定義
 const DRINK_CHARS={
@@ -542,46 +636,8 @@ function getAllLevelInfos(){
   return infos;
 }
 
-// レベル管理
-function loadLevel(){try{return parseInt(localStorage.getItem(LEVEL_KEY)||'1')||1}catch{return 1}}
-function saveLevel(v){try{localStorage.setItem(LEVEL_KEY,v)}catch{}}
-function loadLevelStart(){
-  try{
-    const v=localStorage.getItem(LEVEL_START_KEY);
-    if(v)return new Date(v).getTime();
-    // 初期化：最初の記録時点 or 今
-    const rs=load();
-    const t=rs.length?new Date(rs[rs.length-1].startTime).getTime():Date.now();
-    localStorage.setItem(LEVEL_START_KEY,new Date(t).toISOString());
-    return t;
-  }catch{return 0}
-}
-function saveLevelStart(t){try{localStorage.setItem(LEVEL_START_KEY,new Date(t).toISOString())}catch{}}
-
-// レベルによる閾値倍率（レベル1=1倍、レベル2=2倍、レベル3=3倍...）
-function levelMult(level){return level}
-
-// 現在のレベルでの判定用レコード（レベル開始後のみ）
-function getCurrentLevelRecords(){
-  const start=loadLevelStart();
-  return load().filter(r=>new Date(r.startTime).getTime()>=start);
-}
-
-// レベル称号を取得（レベル1は未獲得、レベル2以降に応じて）
-function getLevelTitle(level){
-  if(level<=1)return null;
-  const titles=['','初級','中級','上級','達人','師範','賢者','仙人','伝説','神話','宇宙'];
-  const base=level-1;
-  if(base<titles.length)return titles[base]+'の飲み会マスター';
-  return `レベル${level}の飲み会マスター`;
-}
-function getLevelIcon(level){
-  if(level<=1)return '🌱';
-  const icons=['','🥉','🥈','🥇','🏆','👑','💎','🌟','⭐','✨','🌌'];
-  const base=level-1;
-  if(base<icons.length)return icons[base];
-  return '🌌';
-}
+function loadSoftRatio(){try{const v=parseFloat(localStorage.getItem(SOFT_RATIO_KEY));return isNaN(v)?3:v}catch{return 3}}
+function saveSoftRatio(v){try{localStorage.setItem(SOFT_RATIO_KEY,v)}catch{}}
 
 function calcAlco(drinkLog){
   return drinkLog.filter(d=>!SOFT_DRINKS.has(d.name)).reduce((sum,d)=>sum+(ALCO_MAP[d.name]||DEFAULT_ALCO),0);
@@ -649,8 +705,9 @@ function openReviewFromHome(){
   homeTab('start');showScreen('s-review');
   document.getElementById('step-hangover').style.display='block';
   document.getElementById('step-memory').style.display='none';
-  document.getElementById('review-step-label').textContent='ステップ 1 / 2';
-  pendingHangover=-1;
+  document.getElementById('step-regret').style.display='none';
+  document.getElementById('review-step-label').textContent='ステップ 1 / 3';
+  pendingHangover=-1;pendingMemory=-1;pendingRegrets=[];
   const counts={};(session.drinkLog||[]).forEach(d=>{counts[d.name]=(counts[d.name]||0)+1;});
   const alco=calcAlco(session.drinkLog||[]);
   document.getElementById('hov-summary').textContent=session.date+' — '+Object.entries(counts).map(([n,c])=>`${n} ${c}杯`).join('、')+` / 純アルコール約${alco}g`;
@@ -670,26 +727,6 @@ function homeTab(t){
 
 function renderHomeWidgets(){
   const records=load();
-
-  // レベル表示
-  const level=loadLevel();
-  const levelInfo=getLevelInfo(level);
-  const levelRecords=getCurrentLevelRecords();
-  const unlockedCount=ACHIEVEMENTS.filter(a=>a.check(levelRecords,level)).length;
-  const levelProgress=Math.round(unlockedCount/ACHIEVEMENTS.length*100);
-  const levelEl=document.getElementById('level-display');
-  levelEl.style.display='block';
-  levelEl.innerHTML=`<div onclick="homeTab('badges')" style="background:linear-gradient(135deg,${levelInfo.color},${getLevelInfo(level+1).color});border-radius:12px;padding:12px 16px;margin-bottom:12px;color:#fff;cursor:pointer;display:flex;align-items:center;gap:12px">
-    <div style="font-size:32px">${levelInfo.icon}</div>
-    <div style="flex:1">
-      <div style="font-size:11px;opacity:0.9;font-weight:700">LEVEL ${level} — ${levelInfo.title}</div>
-      <div style="background:rgba(255,255,255,0.3);border-radius:99px;height:6px;overflow:hidden;margin-top:4px">
-        <div style="background:#fff;height:100%;width:${levelProgress}%;transition:width 0.5s"></div>
-      </div>
-      <div style="font-size:11px;opacity:0.9;margin-top:2px">${unlockedCount}/${ACHIEVEMENTS.length} バッジ獲得</div>
-    </div>
-    <div style="font-size:18px;opacity:0.7">›</div>
-  </div>`;
 
   // ストリーク
   const streak=getStreak(records);
@@ -778,7 +815,7 @@ function startSessionWithUsual(){
   const now=new Date();
   const drinkLog=[];
   usual.forEach(u=>{for(let i=0;i<u.count;i++)drinkLog.push({name:u.name,time:new Date(now.getTime()+i*1000).toISOString()});});
-  session={phase:'drinking',startTime:now.toISOString(),date:now.toLocaleDateString('ja-JP'),drinks:usual.map(u=>u.name),drinkLog,extras:{food:false,water:false,snack:false},autoEnded:false};
+  session={phase:'drinking',startTime:now.toISOString(),date:now.toLocaleDateString('ja-JP'),drinks:usual.map(u=>u.name),drinkLog,extras:{food:false,water:false,snack:false},autoEnded:false,scene:null};
   saveSession(session);lastAppliedCups=-1;document.body.className='';
   showScreen('s-drinking');
   document.getElementById('auto-end-banner').style.display='none';
@@ -791,8 +828,15 @@ function showScreen(id){
 }
 
 function startSession(){
+  // シーン選択画面を表示
+  const el=document.getElementById('scene-options');
+  el.innerHTML=SCENES.map(s=>`<button class="big-btn" onclick="startSessionWithScene('${s.id}')" style="padding:16px 8px;font-size:13px;text-align:center">${s.icon}<br>${s.label}</button>`).join('');
+  showScreen('s-scene');
+}
+
+function startSessionWithScene(sceneId){
   const now=new Date();
-  session={phase:'drinking',startTime:now.toISOString(),date:now.toLocaleDateString('ja-JP'),drinks:[],drinkLog:[],extras:{food:false,water:false,snack:false},autoEnded:false};
+  session={phase:'drinking',startTime:now.toISOString(),date:now.toLocaleDateString('ja-JP'),drinks:[],drinkLog:[],extras:{food:false,water:false,snack:false},autoEnded:false,scene:sceneId};
   saveSession(session);lastAppliedCups=-1;document.body.className='';
   showScreen('s-drinking');
   document.getElementById('auto-end-banner').style.display='none';
@@ -933,19 +977,49 @@ function goToHangoverStep(){
   document.body.className='';openReviewFromHome();showScreen('s-review');
 }
 
+let pendingMemory=-1;
+let pendingRegrets=[];
+
 function setHangover(level){
   pendingHangover=level;
   document.getElementById('step-hangover').style.display='none';
   document.getElementById('step-memory').style.display='block';
-  document.getElementById('review-step-label').textContent='ステップ 2 / 2';
+  document.getElementById('review-step-label').textContent='ステップ 2 / 3';
 }
 
-function setMemory(level){finalizeRecord(pendingHangover,level);}
+function setMemory(level){
+  pendingMemory=level;
+  document.getElementById('step-memory').style.display='none';
+  document.getElementById('step-regret').style.display='block';
+  document.getElementById('review-step-label').textContent='ステップ 3 / 3';
+  renderRegretOptions();
+}
 
-function finalizeRecord(hangover,memory){
+function renderRegretOptions(){
+  const el=document.getElementById('regret-options');
+  el.innerHTML=REGRETS.map(r=>`<label class="check-pill" id="regret-${r.id}" onclick="toggleRegret('${r.id}')"><span>${r.icon} ${r.label}</span></label>`).join('');
+}
+
+function toggleRegret(id){
+  const idx=pendingRegrets.indexOf(id);
+  if(idx>=0)pendingRegrets.splice(idx,1);
+  else pendingRegrets.push(id);
+  const el=document.getElementById('regret-'+id);
+  if(el)el.classList.toggle('on',pendingRegrets.includes(id));
+}
+
+function saveRegrets(){
+  finalizeWithRegrets(pendingRegrets);
+}
+
+function finalizeWithRegrets(regrets){
+  finalizeRecord(pendingHangover,pendingMemory,regrets);
+}
+
+function finalizeRecord(hangover,memory,regrets){
   const counts={};(session.drinkLog||[]).forEach(d=>{counts[d.name]=(counts[d.name]||0)+1;});
   const alco=calcAlco(session.drinkLog||[]);
-  const rec={id:Date.now(),date:session.date,startTime:session.startTime,endTime:session.endTime,autoEnded:session.autoEnded||false,drinkCounts:counts,alco,extras:session.extras||{},hangover,memory};
+  const rec={id:Date.now(),date:session.date,startTime:session.startTime,endTime:session.endTime,autoEnded:session.autoEnded||false,drinkCounts:counts,alco,extras:session.extras||{},hangover,memory,regrets:regrets||[],scene:session.scene||null};
   const level=loadLevel();
   const prevRecords=getCurrentLevelRecords();
   const prevUnlocked=new Set(ACHIEVEMENTS.filter(a=>a.check(prevRecords,level)).map(a=>a.id));
@@ -1030,14 +1104,21 @@ function renderHistory(){
     const hcls=r.hangover>=2?'b-ng':'b-ok';const mcls=r.memory>=2?'b-warn':'b-ok';
     const auto=r.autoEnded?'<span class="badge" style="background:#f0f0f0;color:#888;margin-left:4px">自動終了</span>':'';
     const past=r.isPastRecord?'<span class="badge" style="background:#f3eeff;color:#7c4dff;margin-left:4px">遡り記録</span>':'';
+    const quick=r.isQuickRecord?'<span class="badge" style="background:#e6f1fb;color:#0c447c;margin-left:4px">⚡ザックリ</span>':'';
     const alcoStr=r.alco?`<span class="badge" style="background:#f0f0f0;color:#555;margin-left:4px">🧪${r.alco}g</span>`:'';
     const extras=[];if(r.extras?.food)extras.push('🍱');if(r.extras?.water)extras.push('💧');if(r.extras?.snack)extras.push('🥜');
+    // シーンバッジ
+    const sceneObj=r.scene?SCENES.find(s=>s.id===r.scene):null;
+    const sceneStr=sceneObj?`<span class="badge" style="background:#fff8e1;color:#7a5a00;margin-left:4px">${sceneObj.icon} ${sceneObj.label}</span>`:'';
+    // 後悔バッジ
+    const regretsStr=(r.regrets&&r.regrets.length)?`<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">${r.regrets.map(id=>{const rg=REGRETS.find(x=>x.id===id);return rg?`<span class="badge" style="background:#fff0ef;color:#a32d2d;font-size:10px">${rg.icon} ${rg.label}</span>`:'';}).join('')}</div>`:'';
     return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start">
-      <div><span class="muted">${r.date}</span>${auto}${past}
+      <div style="flex:1"><span class="muted">${r.date}</span>${auto}${past}${quick}${sceneStr}
         <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
           <span class="badge ${hcls}">${HLABELS[r.hangover]}</span>
           <span class="badge ${mcls}">${MLABELS[r.memory]}</span>${alcoStr}${extras.length?`<span style="font-size:14px">${extras.join('')}</span>`:''}
         </div>
+        ${regretsStr}
       </div><button class="del-btn" onclick="deleteRecord(${r.id})">🗑</button>
     </div><div class="muted" style="margin-top:8px;font-size:12px">${drinks}</div></div>`;
   }).join('');
@@ -1121,6 +1202,118 @@ function savePastRecord(){
   save(records);
   togglePastForm();
   renderHistory();
+}
+
+// ザックリ記録モード
+let quickData={when:'today',amount:null,hangover:-1,memory:-1,customDate:null,regrets:[]};
+
+function openQuickRecord(){
+  quickData={when:'today',amount:null,hangover:-1,memory:-1,customDate:null,regrets:[]};
+  showScreen('s-quick');
+  document.getElementById('q-custom-date').style.display='none';
+  document.getElementById('q-custom-date').value=new Date().toISOString().split('T')[0];
+  highlightQuickWhen('today');
+  ['q-amt-light','q-amt-normal','q-amt-heavy','q-h-ok','q-h-tired','q-h-pain','q-h-worst','q-m-all','q-m-part','q-m-vague','q-m-none'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.outline='none';
+  });
+  // 後悔オプションを描画
+  const qrEl=document.getElementById('q-regret-options');
+  if(qrEl)qrEl.innerHTML=REGRETS.map(r=>`<label class="check-pill" id="q-regret-${r.id}" onclick="toggleQuickRegret('${r.id}')"><span>${r.icon} ${r.label}</span></label>`).join('');
+}
+
+function toggleQuickRegret(id){
+  const idx=quickData.regrets.indexOf(id);
+  if(idx>=0)quickData.regrets.splice(idx,1);
+  else quickData.regrets.push(id);
+  const el=document.getElementById('q-regret-'+id);
+  if(el)el.classList.toggle('on',quickData.regrets.includes(id));
+}
+
+function highlightQuickWhen(key){
+  ['today','yesterday'].forEach(k=>{
+    const el=document.getElementById('q-when-'+k);
+    if(el)el.style.outline=k===key?'3px solid #06d6a0':'none';
+  });
+}
+
+function setQuickWhen(when){
+  quickData.when=when;
+  quickData.customDate=null;
+  highlightQuickWhen(when);
+  document.getElementById('q-custom-date').style.display='none';
+}
+
+function toggleQuickCustomDate(){
+  const el=document.getElementById('q-custom-date');
+  const isOpen=el.style.display!=='none';
+  el.style.display=isOpen?'none':'block';
+  if(!isOpen){
+    quickData.when='custom';
+    highlightQuickWhen('');
+  }
+}
+
+function setQuickAmount(amt){
+  quickData.amount=amt;
+  ['light','normal','heavy'].forEach(k=>{
+    const el=document.getElementById('q-amt-'+k);
+    if(el)el.style.outline=k===amt?'3px solid #06d6a0':'none';
+  });
+}
+
+function setQuickHangover(lv){
+  quickData.hangover=lv;
+  const keys=['ok','tired','pain','worst'];
+  keys.forEach((k,i)=>{
+    const el=document.getElementById('q-h-'+k);
+    if(el)el.style.outline=i===lv?'3px solid #06d6a0':'none';
+  });
+}
+
+function setQuickMemory(lv){
+  quickData.memory=lv;
+  const keys=['all','part','vague','none'];
+  keys.forEach((k,i)=>{
+    const el=document.getElementById('q-m-'+k);
+    if(el)el.style.outline=i===lv?'3px solid #06d6a0':'none';
+  });
+}
+
+function saveQuickRecord(){
+  if(!quickData.amount){alert('飲んだ量を選択してください');return;}
+  if(quickData.hangover<0){alert('翌朝の状態を選択してください');return;}
+  if(quickData.memory<0){alert('記憶の状態を選択してください');return;}
+  let targetDate;
+  if(quickData.when==='today')targetDate=new Date();
+  else if(quickData.when==='yesterday'){targetDate=new Date();targetDate.setDate(targetDate.getDate()-1);}
+  else {
+    const v=document.getElementById('q-custom-date').value;
+    if(!v){alert('日付を選択してください');return;}
+    targetDate=new Date(v);
+  }
+  const amountMap={light:{cups:2,alco:30,drink:'ビール'},normal:{cups:5,alco:70,drink:'ビール'},heavy:{cups:8,alco:120,drink:'ビール'}};
+  const am=amountMap[quickData.amount];
+  const rec={
+    id:Date.now(),
+    date:targetDate.toLocaleDateString('ja-JP'),
+    startTime:new Date(targetDate.getTime()-3*60*60*1000).toISOString(),
+    endTime:targetDate.toISOString(),
+    autoEnded:false,
+    drinkCounts:{[am.drink]:am.cups},
+    alco:am.alco,
+    extras:{food:false,water:false,snack:false},
+    hangover:quickData.hangover,
+    memory:quickData.memory,
+    regrets:quickData.regrets||[],
+    scene:null,
+    isQuickRecord:true,
+    isPastRecord:quickData.when!=='today'
+  };
+  const records=load();
+  records.push(rec);
+  records.sort((a,b)=>new Date(b.startTime)-new Date(a.startTime));
+  save(records);
+  showScreen('s-home');homeTab('history');
 }
 
 function exportData(){
@@ -1214,6 +1407,62 @@ function renderAnalysis(){
 
   if(sortedH.length){html+=`<div class="section-title">🍶 二日酔いになりやすいお酒</div>`;sortedH.forEach(([n,v])=>{const p=Math.round(v.hangover/v.total*100);html+=drinkBarHtml(n,p,p>=50?'#E24B4A':'#06d6a0');});}
   if(sortedM.length){html+=`<div class="section-title" style="margin-top:1.5rem">🧠 記憶をなくしやすいお酒</div>`;sortedM.forEach(([n,v])=>{const p=Math.round(v.memory/v.total*100);html+=drinkBarHtml(n,p,p>=50?'#BA7517':'#06d6a0');});}
+
+  // シーン別分析
+  const sceneRecords=records.filter(r=>r.scene);
+  if(sceneRecords.length>=2){
+    const sceneStats={};
+    sceneRecords.forEach(r=>{
+      if(!sceneStats[r.scene])sceneStats[r.scene]={total:0,bad:0,memoryLost:0,regrets:0};
+      sceneStats[r.scene].total++;
+      if(r.hangover>=2)sceneStats[r.scene].bad++;
+      if(r.memory>=2)sceneStats[r.scene].memoryLost++;
+      if(r.regrets&&r.regrets.length)sceneStats[r.scene].regrets++;
+    });
+    const sortedScenes=Object.entries(sceneStats).filter(([,v])=>v.total>=1).sort(([,a],[,b])=>(b.bad/b.total)-(a.bad/a.total));
+    if(sortedScenes.length){
+      html+=`<div class="section-title" style="margin-top:1.5rem">🎭 シーン別の傾向</div>`;
+      sortedScenes.forEach(([sid,v])=>{
+        const sceneObj=SCENES.find(s=>s.id===sid);
+        if(!sceneObj)return;
+        const hRate=Math.round(v.bad/v.total*100);
+        const mRate=Math.round(v.memoryLost/v.total*100);
+        html+=`<div style="margin-bottom:12px">
+          <div style="font-size:13px;font-weight:700;margin-bottom:6px">${sceneObj.icon} ${sceneObj.label} <span class="muted" style="font-weight:400">（${v.total}回）</span></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:12px">
+            <div style="width:68px;color:var(--text2)">二日酔い</div>
+            <div class="bar-wrap"><div class="bar-fill" style="width:${hRate}%;background:${hRate>=50?'#E24B4A':'#06d6a0'}"></div></div>
+            <div style="width:32px;text-align:right" class="muted">${hRate}%</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <div style="width:68px;color:var(--text2)">記憶なくす</div>
+            <div class="bar-wrap"><div class="bar-fill" style="width:${mRate}%;background:${mRate>=50?'#BA7517':'#06d6a0'}"></div></div>
+            <div style="width:32px;text-align:right" class="muted">${mRate}%</div>
+          </div>
+        </div>`;
+      });
+    }
+  }
+
+  // 後悔ランキング
+  const regretCounts={};
+  records.forEach(r=>{(r.regrets||[]).forEach(id=>{regretCounts[id]=(regretCounts[id]||0)+1;});});
+  const sortedRegrets=Object.entries(regretCounts).sort(([,a],[,b])=>b-a).slice(0,5);
+  if(sortedRegrets.length){
+    html+=`<div class="section-title" style="margin-top:1.5rem">💭 よくある後悔 TOP5</div>`;
+    const maxR=sortedRegrets[0][1];
+    sortedRegrets.forEach(([id,cnt])=>{
+      const rg=REGRETS.find(x=>x.id===id);
+      if(!rg)return;
+      const pct=Math.round(cnt/maxR*100);
+      html+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px">
+        <div style="width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${rg.icon} ${rg.label}</div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:#E24B4A"></div></div>
+        <div style="width:28px;text-align:right" class="muted">${cnt}回</div>
+      </div>`;
+    });
+    html+=`<div class="muted" style="font-size:11px;margin-top:4px">これらを減らすのが節制の近道です</div>`;
+  }
 
   html+=`<div class="section-title" style="margin-top:1.5rem">🤖 AIアドバイス</div>
   <div id="ai-advice-area"><button class="big-btn" onclick="getAIAdvice()">データを分析してアドバイスをもらう ✨</button></div>`;
