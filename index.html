@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <link rel="apple-touch-icon" href="kinsyu.png">
+    <link rel="apple-touch-icon" href="kinsyu.png">
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-EN8MP1EE9N"></script>
 <script>
@@ -232,7 +232,7 @@ body.lv4 .section-title{animation:flicker 1s infinite}
   <div id="ht-history" style="display:none">
     <button class="big-btn" onclick="togglePastForm()" id="past-form-toggle-btn" style="margin-bottom:12px">📝 過去の記録を追加する</button>
     <div id="past-form" style="display:none" class="card">
-      <div style="font-size:15px;font-weight:700;margin-bottom:12px">過去の飲み会を記録</div>
+      <div id="past-form-title" style="font-size:15px;font-weight:700;margin-bottom:12px">過去の飲み会を記録</div>
       <div class="label">日付</div>
       <input type="date" id="past-date" style="width:100%;font-size:14px;padding:8px 10px;border:2px solid var(--border);border-radius:10px;outline:none;background:var(--surface);color:var(--text);font-family:var(--font);margin-bottom:12px">
       <div class="label">飲んだお酒（タップで選択）</div>
@@ -257,15 +257,19 @@ body.lv4 .section-title{animation:flicker 1s infinite}
         <button class="h-btn ng" id="past-h3" onclick="selectPastHangover(3)">💀 最悪だった</button>
       </div>
       <div class="label">記憶</div>
-      <div class="hangover-grid" style="margin-bottom:16px">
+      <div class="hangover-grid" style="margin-bottom:12px">
         <button class="h-btn ok" id="past-m0" onclick="selectPastMemory(0)">✅ 全部覚えてる</button>
         <button class="h-btn ok" id="past-m1" onclick="selectPastMemory(1)">🤔 ところどころ</button>
         <button class="h-btn ng" id="past-m2" onclick="selectPastMemory(2)">😵 かなり曖昧</button>
         <button class="h-btn ng" id="past-m3" onclick="selectPastMemory(3)">⬛ ほぼ覚えてない</button>
       </div>
+      <div class="label">シーン（任意）</div>
+      <div id="past-scene-options" class="check-row" style="margin-bottom:12px"></div>
+      <div class="label">後悔したこと（任意・複数選択可）</div>
+      <div id="past-regret-options" class="check-row" style="margin-bottom:16px"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <button class="big-btn" onclick="togglePastForm()">キャンセル</button>
-        <button class="big-btn primary" onclick="savePastRecord()">保存する</button>
+        <button class="big-btn primary" id="past-save-btn" onclick="savePastRecord()">保存する</button>
       </div>
     </div>
     <div id="history-list"></div>
@@ -1129,7 +1133,11 @@ function renderHistory(){
           <span class="badge ${mcls}">${MLABELS[r.memory]}</span>${alcoStr}${extras.length?`<span style="font-size:14px">${extras.join('')}</span>`:''}
         </div>
         ${regretsStr}
-      </div><button class="del-btn" onclick="deleteRecord(${r.id})">🗑</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;margin-left:8px">
+        <button class="del-btn" onclick="editRecord(${r.id})" style="color:#888;font-size:14px" title="編集">✏️</button>
+        <button class="del-btn" onclick="deleteRecord(${r.id})" title="削除">🗑</button>
+      </div>
     </div><div class="muted" style="margin-top:8px;font-size:12px">${drinks}</div></div>`;
   }).join('');
   el.innerHTML=html;
@@ -1139,6 +1147,9 @@ function renderHistory(){
 let pastDrinkCounts={};
 let pastHangover=-1;
 let pastMemory=-1;
+let pastRegrets=[];
+let pastScene=null;
+let editingRecordId=null; // 編集中のレコードID（nullなら新規作成）
 
 function togglePastForm(){
   const form=document.getElementById('past-form');
@@ -1147,8 +1158,9 @@ function togglePastForm(){
   const btn=document.getElementById('past-form-toggle-btn');
   btn.textContent=isOpen?'📝 過去の記録を追加する':'✕ 閉じる';
   if(!isOpen){
-    // フォームリセット
-    pastDrinkCounts={};pastHangover=-1;pastMemory=-1;
+    // フォームリセット（新規作成モード）
+    editingRecordId=null;
+    pastDrinkCounts={};pastHangover=-1;pastMemory=-1;pastRegrets=[];pastScene=null;
     const today=new Date().toISOString().split('T')[0];
     document.getElementById('past-date').value=today;
     document.getElementById('past-drink-counts').textContent='';
@@ -1157,7 +1169,100 @@ function togglePastForm(){
       const hb=document.getElementById('past-h'+i);const mb=document.getElementById('past-m'+i);
       if(hb)hb.style.outline='none';if(mb)mb.style.outline='none';
     }
+    // フォームのタイトル・ボタン更新
+    updatePastFormHeader();
+    renderPastSceneOptions();
+    renderPastRegretOptions();
   }
+}
+
+function updatePastFormHeader(){
+  const title=document.getElementById('past-form-title');
+  const saveBtn=document.getElementById('past-save-btn');
+  if(title)title.textContent=editingRecordId?'記録を編集':'過去の飲み会を記録';
+  if(saveBtn)saveBtn.textContent=editingRecordId?'更新する':'保存する';
+}
+
+function renderPastSceneOptions(){
+  const el=document.getElementById('past-scene-options');
+  if(!el)return;
+  el.innerHTML='<button class="check-pill" id="past-scene-none" onclick="selectPastScene(null)">なし</button>'+
+    SCENES.map(s=>`<button class="check-pill" id="past-scene-${s.id}" onclick="selectPastScene('${s.id}')">${s.icon} ${s.label}</button>`).join('');
+  // 選択状態反映
+  highlightPastScene();
+}
+
+function highlightPastScene(){
+  const noneEl=document.getElementById('past-scene-none');
+  if(noneEl)noneEl.classList.toggle('on',pastScene===null);
+  SCENES.forEach(s=>{
+    const el=document.getElementById('past-scene-'+s.id);
+    if(el)el.classList.toggle('on',pastScene===s.id);
+  });
+}
+
+function selectPastScene(id){
+  pastScene=id;
+  highlightPastScene();
+}
+
+function renderPastRegretOptions(){
+  const el=document.getElementById('past-regret-options');
+  if(!el)return;
+  el.innerHTML=REGRETS.map(r=>`<label class="check-pill" id="past-regret-${r.id}" onclick="togglePastRegret('${r.id}')"><span>${r.icon} ${r.label}</span></label>`).join('');
+  // 選択状態反映
+  REGRETS.forEach(r=>{
+    const el=document.getElementById('past-regret-'+r.id);
+    if(el)el.classList.toggle('on',pastRegrets.includes(r.id));
+  });
+}
+
+function togglePastRegret(id){
+  const idx=pastRegrets.indexOf(id);
+  if(idx>=0)pastRegrets.splice(idx,1);
+  else pastRegrets.push(id);
+  const el=document.getElementById('past-regret-'+id);
+  if(el)el.classList.toggle('on',pastRegrets.includes(id));
+}
+
+// 履歴から編集モードで開く
+function editRecord(id){
+  const records=load();
+  const rec=records.find(r=>r.id===id);
+  if(!rec){alert('記録が見つかりません');return;}
+  // フォームを開く
+  editingRecordId=id;
+  pastDrinkCounts={...(rec.drinkCounts||{})};
+  pastHangover=rec.hangover;
+  pastMemory=rec.memory;
+  pastRegrets=[...(rec.regrets||[])];
+  pastScene=rec.scene||null;
+  // フォーム表示
+  const form=document.getElementById('past-form');
+  form.style.display='block';
+  const btn=document.getElementById('past-form-toggle-btn');
+  if(btn)btn.textContent='✕ 閉じる';
+  // 日付セット
+  const d=new Date(rec.startTime);
+  const dateStr=d.toISOString().split('T')[0];
+  document.getElementById('past-date').value=dateStr;
+  // ドリンク表示更新
+  const counts=Object.entries(pastDrinkCounts);
+  document.getElementById('past-drink-counts').innerHTML=counts.length
+    ?counts.map(([n,c])=>`<span class="badge" style="margin-right:4px;${SOFT_DRINKS.has(n)?'background:#e0fff5;color:#085041':'background:#f5f5f5;color:#555'}">${n} ${c}杯</span>`).join('')
+    :'お酒をタップして杯数を選択（複数回タップで杯数増加）';
+  // 翌朝・記憶の選択状態
+  for(let i=0;i<4;i++){
+    const hb=document.getElementById('past-h'+i);const mb=document.getElementById('past-m'+i);
+    if(hb)hb.style.outline=i===pastHangover?'3px solid #06d6a0':'none';
+    if(mb)mb.style.outline=i===pastMemory?'3px solid #06d6a0':'none';
+  }
+  // ヘッダー・ボタン更新
+  updatePastFormHeader();
+  renderPastSceneOptions();
+  renderPastRegretOptions();
+  // フォームまでスクロール
+  setTimeout(()=>{form.scrollIntoView({behavior:'smooth',block:'start'});},100);
 }
 
 function togglePastDrink(name,btn){
@@ -1196,20 +1301,51 @@ function savePastRecord(){
     if(SOFT_DRINKS.has(name))return sum;
     return sum+(ALCO_MAP[name]||DEFAULT_ALCO)*cnt;
   },0);
-  const rec={
-    id:Date.now(),date:dateStr,
-    startTime:new Date(dateVal+'T20:00:00').toISOString(),
-    endTime:new Date(dateVal+'T23:00:00').toISOString(),
-    autoEnded:false,drinkCounts:{...pastDrinkCounts},alco,
-    extras:{food:false,water:false,snack:false},
-    hangover:pastHangover,memory:pastMemory,
-    isPastRecord:true
-  };
   const records=load();
-  // 日付順にソートして挿入
-  records.push(rec);
+  if(editingRecordId){
+    // 編集モード: 既存のレコードを更新
+    const idx=records.findIndex(r=>r.id===editingRecordId);
+    if(idx<0){alert('記録が見つかりません');return;}
+    const original=records[idx];
+    // 元の時刻を維持しつつ日付だけ変更
+    const origStart=new Date(original.startTime);
+    const origEnd=original.endTime?new Date(original.endTime):null;
+    const newStart=new Date(dateVal+'T'+origStart.toTimeString().slice(0,8));
+    let newEnd=origEnd;
+    if(origEnd){
+      const dayDiff=(origEnd-origStart);
+      newEnd=new Date(newStart.getTime()+dayDiff);
+    }
+    records[idx]={
+      ...original,
+      date:dateStr,
+      startTime:newStart.toISOString(),
+      endTime:newEnd?newEnd.toISOString():null,
+      drinkCounts:{...pastDrinkCounts},
+      alco,
+      hangover:pastHangover,
+      memory:pastMemory,
+      regrets:[...pastRegrets],
+      scene:pastScene
+    };
+  } else {
+    // 新規作成
+    const rec={
+      id:Date.now(),date:dateStr,
+      startTime:new Date(dateVal+'T20:00:00').toISOString(),
+      endTime:new Date(dateVal+'T23:00:00').toISOString(),
+      autoEnded:false,drinkCounts:{...pastDrinkCounts},alco,
+      extras:{food:false,water:false,snack:false},
+      hangover:pastHangover,memory:pastMemory,
+      regrets:[...pastRegrets],
+      scene:pastScene,
+      isPastRecord:true
+    };
+    records.push(rec);
+  }
   records.sort((a,b)=>new Date(b.startTime)-new Date(a.startTime));
   save(records);
+  editingRecordId=null;
   togglePastForm();
   renderHistory();
 }
