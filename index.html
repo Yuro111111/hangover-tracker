@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-        <link rel="apple-touch-icon" href="kinsyu.png">
+            <link rel="apple-touch-icon" href="kinsyu.png">
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-EN8MP1EE9N"></script>
 <script>
@@ -13,153 +13,693 @@
   gtag('config', 'G-EN8MP1EE9N');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>二日酔いトラッカー</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<title>🍺 飲みすぎチェッカー</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,sans-serif;background:#fff;color:#1a1a1a;padding:1.5rem}
+:root{
+  --bg:#fff9f0;--surface:#fff;--border:#ffd6a5;--text:#3d2b1f;--text2:#a0714f;
+  --accent:#ff6b6b;--accent2:#ffd166;--accent3:#06d6a0;--radius:16px;
+  --font:'Zen Maru Gothic',system-ui,sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);padding:1.5rem;transition:background 1s,color 1s}
 .app{max-width:480px;margin:0 auto}
 .screen{display:none}.screen.active{display:block}
-.big-btn{width:100%;padding:18px;font-size:16px;font-weight:500;border-radius:12px;cursor:pointer;border:1px solid #ccc;background:#fff;color:#1a1a1a;transition:background 0.1s,transform 0.08s}
-.big-btn:active{transform:scale(0.98)}
-.big-btn.primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
-.big-btn.primary:hover{opacity:0.85}
-.muted{font-size:13px;color:#666}
-.lbl{font-size:11px;color:#666;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:700;text-align:center;margin-bottom:1.5rem;letter-spacing:0.05em;transition:all 0.5s}
+.tabs{display:flex;gap:4px;background:var(--border);border-radius:12px;padding:4px;margin-bottom:1.25rem;transition:background 1s}
+.tab{flex:1;padding:8px 4px;text-align:center;font-size:12px;font-weight:500;cursor:pointer;border-radius:9px;color:var(--text2);border:none;background:transparent;transition:all 0.2s;font-family:var(--font)}
+.tab.active{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.big-btn{width:100%;padding:16px;font-size:16px;font-weight:700;border-radius:var(--radius);cursor:pointer;border:2px solid var(--border);background:var(--surface);color:var(--text);transition:all 0.15s;font-family:var(--font);letter-spacing:0.03em}
+.big-btn:active{transform:scale(0.97)}
+.big-btn.primary{background:linear-gradient(135deg,var(--accent),#ff8e53);color:#fff;border-color:transparent;box-shadow:0 4px 15px rgba(255,107,107,0.4)}
 .drink-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
-.d-btn{padding:14px 8px;font-size:14px;border-radius:8px;border:1px solid #e0e0e0;background:#fff;cursor:pointer;color:#1a1a1a;transition:all 0.12s;text-align:center}
-.d-btn:hover{border-color:#aaa;background:#f5f5f5}
-.d-btn.flash{background:#E6F1FB;border-color:#85B7EB;color:#0C447C}
-.custom-row{display:flex;gap:8px;margin-top:8px}
-.custom-row input{flex:1;font-size:14px;padding:8px 10px;border:1px solid #ddd;border-radius:8px;outline:none}
-.custom-row input:focus{border-color:#888}
-.custom-row button{white-space:nowrap;font-size:13px;padding:8px 14px;border:1px solid #ccc;border-radius:8px;background:#fff;cursor:pointer}
-.log-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0}
+.d-btn{padding:14px 6px;font-size:13px;font-weight:700;border-radius:12px;border:2px solid var(--border);background:var(--surface);cursor:pointer;color:var(--text);transition:all 0.15s;text-align:center;font-family:var(--font)}
+.d-btn:nth-child(1){border-color:#ffd166;background:#fff8e1}
+.d-btn:nth-child(2){border-color:#a8d8ea;background:#e8f4f8}
+.d-btn:nth-child(3){border-color:#ffaaa5;background:#fff0ef}
+.d-btn:nth-child(4){border-color:#c9b1ff;background:#f3eeff}
+.d-btn:nth-child(5){border-color:#a8d8ea;background:#e8f4f8}
+.d-btn:nth-child(6){border-color:#ffd166;background:#fff8e1}
+.d-btn:nth-child(7){border-color:#ffaaa5;background:#fff0ef}
+.d-btn:nth-child(8){border-color:#c9b1ff;background:#f3eeff}
+.d-btn:nth-child(9){border-color:#ffaaa5;background:#fff0ef}
+.d-btn.soft{border-color:#06d6a0!important;background:#e0fff5!important;color:#085041!important}
+.d-btn.flash{transform:scale(1.08);box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+.timer-area{border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1rem;color:#fff;display:flex;justify-content:space-between;align-items:center;transition:all 1s;background:linear-gradient(135deg,#667eea,#764ba2)}
+.timer{font-size:28px;font-weight:700;letter-spacing:0.06em}
+.timer-label{font-size:11px;opacity:0.8;margin-bottom:4px}
+.alco-meter{border-radius:var(--radius);padding:10px 14px;margin-bottom:10px;transition:all 0.5s;border:2px solid var(--border);background:var(--surface)}
+.meter-bar-bg{background:rgba(0,0,0,0.1);border-radius:99px;height:10px;overflow:hidden;margin-top:6px}
+.meter-bar{height:100%;border-radius:99px;transition:width 0.5s,background 0.5s}
+.log-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:2px dashed var(--border)}
 .log-row:last-child{border-bottom:none}
-.count-badge{background:#f5f5f5;border-radius:99px;padding:2px 10px;font-size:13px;font-weight:500}
-.timer{font-size:22px;font-weight:500;letter-spacing:0.04em}
-.card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:8px}
-.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
-.stat-card{background:#f5f5f5;border-radius:8px;padding:1rem}
-.stat-val{font-size:22px;font-weight:500}
-.bar-wrap{flex:1;background:#f0f0f0;border-radius:4px;height:8px;overflow:hidden}
-.bar-fill{height:100%;border-radius:4px}
+.count-badge{border-radius:99px;padding:3px 12px;font-size:13px;font-weight:700;background:var(--accent2);color:var(--text)}
+.drink-minus-btn,.drink-plus-btn{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:var(--surface);color:var(--text2);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font);padding:0;line-height:1;transition:all 0.15s}
+.drink-minus-btn:active,.drink-plus-btn:active{transform:scale(0.9)}
+.drink-minus-btn:hover{background:#fff0ef;border-color:#ff6b6b;color:#a32d2d}
+.drink-plus-btn:hover{background:#fff8e1;border-color:#ffd166;color:#7a5a00}
+.card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px;transition:all 1s}
+.soft-alert{background:#e0fff5;border:2px solid #06d6a0;border-radius:12px;padding:10px 14px;margin-bottom:10px;font-size:13px;font-weight:500;color:#085041;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.soft-alert-btn{font-size:12px;padding:6px 14px;border:2px solid #06d6a0;border-radius:99px;background:#fff;color:#085041;cursor:pointer;font-weight:700;white-space:nowrap;font-family:var(--font)}
+.warning-banner{border-radius:12px;padding:10px 14px;margin-bottom:10px;font-size:13px;font-weight:500;transition:all 0.5s}
+.h-btn{padding:18px;font-size:14px;border-radius:12px;border:2px solid var(--border);background:var(--surface);cursor:pointer;font-weight:700;transition:all 0.15s;font-family:var(--font);width:100%}
+.h-btn.ok{background:#e0fff5;border-color:#06d6a0;color:#085041}
+.h-btn.ng{background:#fff0ef;border-color:#ff6b6b;color:#a32d2d}
 .hangover-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
-.h-btn{padding:16px;font-size:14px;border-radius:8px;border:1px solid #e0e0e0;background:#fff;cursor:pointer;font-weight:500;transition:all 0.1s}
-.h-btn:hover{background:#f5f5f5}
-.h-btn.ok{background:#E1F5EE;border-color:#5DCAA5;color:#085041}
-.h-btn.ng{background:#FCEBEB;border-color:#F09595;color:#A32D2D}
-.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500}
-.b-ok{background:#E1F5EE;color:#085041}
-.b-ng{background:#FCEBEB;color:#A32D2D}
-.b-warn{background:#FAEEDA;color:#633806}
-.sec-title{font-size:13px;font-weight:500;color:#666;margin:1.25rem 0 8px}
-.tabs{display:flex;gap:2px;background:#f0f0f0;border-radius:8px;padding:3px;margin-bottom:1.25rem}
-.tab{flex:1;padding:6px;text-align:center;font-size:13px;cursor:pointer;border-radius:6px;color:#666;border:none;background:transparent;transition:all 0.15s}
-.tab.active{background:#fff;color:#1a1a1a;font-weight:500;border:1px solid #e0e0e0}
-.empty{text-align:center;padding:2.5rem 0;color:#888;font-size:14px}
-.del-btn{background:none;border:none;cursor:pointer;color:#aaa;padding:4px 6px;font-size:16px;line-height:1;border-radius:4px}
-.del-btn:hover{color:#A32D2D;background:#f5f5f5}
-.step-lbl{font-size:11px;color:#888;margin-bottom:12px}
-.auto-banner{background:#FAEEDA;border:1px solid #EF9F27;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#633806}
+.badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:99px;font-weight:700}
+.b-ok{background:#e0fff5;color:#085041}
+.b-ng{background:#fff0ef;color:#a32d2d}
+.b-warn{background:#fff8e1;color:#633806}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+.stat-card{background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:1rem;text-align:center;transition:all 1s}
+.stat-val{font-size:24px;font-weight:700;color:var(--accent)}
+.stat-label{font-size:11px;color:var(--text2);margin-bottom:4px}
+.section-title{font-size:13px;font-weight:700;color:var(--text2);margin:1.25rem 0 8px}
+.bar-wrap{flex:1;background:rgba(0,0,0,0.08);border-radius:4px;height:10px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.4s}
+.check-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.check-pill{display:flex;align-items:center;gap:6px;padding:8px 14px;border:2px solid var(--border);border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;user-select:none;transition:all 0.15s;background:var(--surface);color:var(--text);font-family:var(--font)}
+.check-pill.on{background:#e0fff5;border-color:#06d6a0;color:#085041}
+.muted{font-size:13px;color:var(--text2)}
+.label{font-size:11px;color:var(--text2);margin-bottom:4px}
+.custom-row{display:flex;gap:8px;margin-top:8px}
+.custom-row input{flex:1;font-size:14px;padding:10px 12px;border:2px solid var(--border);border-radius:10px;outline:none;background:var(--surface);color:var(--text);font-family:var(--font)}
+.custom-row input:focus{border-color:var(--accent)}
+.custom-row button{white-space:nowrap;font-size:13px;font-weight:700;padding:10px 16px;border:2px solid var(--border);border-radius:10px;background:var(--surface);cursor:pointer;color:var(--text);font-family:var(--font)}
+.goal-row{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.goal-row input[type=number]{width:60px;font-size:16px;padding:6px 8px;border:2px solid var(--border);border-radius:10px;text-align:center;outline:none;background:var(--surface);color:var(--text);font-family:var(--font)}
+.goal-bar-wrap{flex:1;background:rgba(0,0,0,0.08);border-radius:4px;height:10px;overflow:hidden}
+.goal-bar{height:100%;border-radius:4px;transition:width 0.3s}
+.empty{text-align:center;padding:2.5rem 0;color:var(--text2);font-size:14px}
+.del-btn{background:none;border:none;cursor:pointer;font-size:13px;color:#ccc;padding:2px 6px}
+.step-label{font-size:11px;color:var(--text2);margin-bottom:12px}
+.auto-banner{background:#fff8e1;border:2px solid #ffd166;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13px;font-weight:500;color:#633806}
+.export-btn{font-size:12px;padding:6px 14px;border:2px solid var(--border);border-radius:10px;background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font);font-weight:500}
+.ai-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-top:1rem;font-size:13px;color:var(--text);line-height:1.8;transition:all 1s}
+.ai-label{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:0.08em}
+.ai-loading{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)}
+.dot-flashing{display:inline-flex;gap:4px}
+.dot-flashing span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:dotpulse 1.2s infinite}
+.dot-flashing span:nth-child(2){animation-delay:.2s}
+.dot-flashing span:nth-child(3){animation-delay:.4s}
+@keyframes dotpulse{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.month-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
+.month-label{width:36px;color:var(--text2);text-align:right}
+.month-bar-outer{flex:1;background:rgba(0,0,0,0.08);border-radius:4px;height:18px;overflow:hidden;position:relative}
+.month-bar-inner{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 0.4s}
+.month-bar-val{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text2);font-weight:700}
+
+/* キャラクター表示 */
+.char-display{font-size:28px;display:inline-block;animation:bob 2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.char-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0;padding:8px;background:var(--surface);border:2px dashed var(--border);border-radius:12px}
+.char-item{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text2);font-weight:700}
+
+/* バッジシステム */
+.achievements-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:10px}
+.ach-badge{background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:10px 8px;text-align:center;font-size:11px;transition:all 0.2s;position:relative}
+.ach-badge.unlocked{background:linear-gradient(135deg,#fff8e1,#ffeaa5);border-color:#ffd166;animation:badge-pop 0.4s}
+.ach-badge.locked{opacity:0.4;filter:grayscale(100%)}
+.ach-icon{font-size:24px;display:block;margin-bottom:4px}
+.ach-name{font-weight:700;font-size:11px;color:var(--text)}
+.ach-desc{font-size:10px;color:var(--text2);margin-top:2px;line-height:1.3}
+@keyframes badge-pop{0%{transform:scale(0.5)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+
+/* ストリーク */
+.streak-display{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#ff6b6b,#ff8e53);color:#fff;border-radius:99px;padding:6px 16px;font-size:13px;font-weight:700;margin-bottom:12px;box-shadow:0 2px 8px rgba(255,107,107,0.3)}
+.streak-flame{font-size:18px;animation:flame 1s ease-in-out infinite alternate}
+@keyframes flame{from{transform:scale(1)}to{transform:scale(1.15)}}
+
+/* いつものセット */
+.usual-card{background:linear-gradient(135deg,#fff8e1,#ffeaa5);border:2px solid #ffd166;border-radius:12px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.usual-info{font-size:12px;color:#7a5a00;flex:1}
+.usual-btn{background:#fff;border:2px solid #ffd166;border-radius:99px;padding:8px 16px;font-size:13px;font-weight:700;color:#7a5a00;cursor:pointer;font-family:var(--font);white-space:nowrap}
+.usual-btn:active{transform:scale(0.95)}
+
+/* 週次サマリー */
+.weekly-summary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:12px}
+.weekly-title{font-size:13px;font-weight:700;opacity:0.9;margin-bottom:8px}
+.weekly-stats{display:flex;gap:12px;flex-wrap:wrap;font-size:13px}
+.weekly-stat strong{font-size:18px;display:block}
+
+/* 翌朝コメント */
+.morning-card{background:linear-gradient(135deg,#fff8e1,#ffeaa5);border:2px solid #ffd166;border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:12px}
+.morning-title{font-size:13px;font-weight:700;color:#7a5a00;margin-bottom:8px}
+.morning-msg{font-size:14px;color:#633806;line-height:1.7}
+
+/* ホラーアニメーション */
+@keyframes shake{0%,100%{transform:translate(0,0)}25%{transform:translate(-2px,1px)}75%{transform:translate(2px,-1px)}}
+@keyframes bigshake{0%,100%{transform:translate(0,0) rotate(0)}20%{transform:translate(-5px,3px) rotate(-1.5deg)}40%{transform:translate(5px,-3px) rotate(1.5deg)}60%{transform:translate(-3px,5px) rotate(-1deg)}80%{transform:translate(3px,-4px) rotate(1deg)}}
+@keyframes flicker{0%,100%{opacity:1}45%{opacity:0.6}55%{opacity:0.9}}
+@keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(180,0,0,0)}50%{box-shadow:0 0 20px 4px rgba(180,0,0,0.35)}}
+
+/* レベル2: 少し怪しい */
+body.lv2{--bg:#fff0f0;--surface:#fff5f5;--border:#ffb3b3;--text:#4a1a1a;--text2:#cc5555;--accent:#e03030}
+body.lv2 .d-btn{animation:shake 2.5s ease-in-out infinite}
+body.lv2 .timer-area{background:linear-gradient(135deg,#c0392b,#922b21)!important}
+
+/* レベル3: かなり怖い */
+body.lv3{--bg:#1a0000;--surface:#2d0000;--border:#6b0000;--text:#ff9999;--text2:#cc4444;--accent:#ff2020;--accent2:#ff4400}
+body.lv3 .app-title{animation:flicker 1.8s infinite;color:#ff4444;text-shadow:0 0 10px rgba(255,0,0,0.6)}
+body.lv3 .d-btn{animation:bigshake 1.8s ease-in-out infinite}
+body.lv3 .d-btn:nth-child(even){animation-delay:0.2s}
+body.lv3 .timer-area{background:linear-gradient(135deg,#8b0000,#3d0000)!important;animation:pulse-red 2s infinite}
+body.lv3 .big-btn.primary{background:linear-gradient(135deg,#8b0000,#cc0000);animation:pulse-red 1.5s infinite}
+body.lv3 .tabs{background:#3a0000}
+body.lv3 .tab.active{background:#550000;color:#ff9999}
+body.lv3 .count-badge{background:#600;color:#ffaaaa}
+
+/* レベル4: 完全ホラー */
+body.lv4{--bg:#000;--surface:#100000;--border:#440000;--text:#ff3333;--text2:#882222;--accent:#ff0000;--accent2:#660000}
+body.lv4 *{font-family:'Courier New',monospace!important}
+body.lv4 .app-title{animation:flicker 0.4s infinite,bigshake 0.7s infinite;color:#ff0000;text-shadow:0 0 15px rgba(255,0,0,0.9),0 0 30px rgba(255,0,0,0.5)}
+body.lv4 .d-btn{animation:bigshake 0.5s infinite}
+body.lv4 .d-btn:nth-child(odd){animation-delay:0.12s;animation-duration:0.6s}
+body.lv4 .timer{animation:flicker 0.25s infinite;text-shadow:0 0 8px #f00}
+body.lv4 .timer-area{background:#180000!important;border:2px solid #600;animation:pulse-red 0.7s infinite}
+body.lv4 .big-btn.primary{background:#600;border-color:#f00;animation:pulse-red 0.5s infinite,bigshake 0.9s infinite}
+body.lv4 .card{animation:bigshake 1.8s infinite}
+body.lv4 .tabs{background:#180000}
+body.lv4 .tab.active{background:#300;color:#f00}
+body.lv4 .count-badge{background:#400;color:#ff6666;animation:flicker 0.8s infinite}
+body.lv4 .section-title{animation:flicker 1s infinite}
+
+/* 写真オーバーレイ（大事な人） */
+.photo-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.94);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;animation:fadeIn 0.5s}
+.photo-overlay::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(255,180,100,0.2),transparent 60%);pointer-events:none;animation:glow 3s ease-in-out infinite alternate}
+@keyframes glow{from{opacity:0.4}to{opacity:1}}
+.photo-overlay img{max-width:88vw;max-height:50vh;border-radius:16px;box-shadow:0 0 60px rgba(255,210,140,0.4),0 8px 32px rgba(0,0,0,0.5);animation:photo-pop 0.9s cubic-bezier(0.34,1.56,0.64,1);position:relative;z-index:1}
+.photo-overlay-msg{color:#fff;font-size:20px;font-weight:700;margin-top:1.8rem;text-align:center;line-height:1.6;max-width:320px;animation:slide-up-overlay 1s;position:relative;z-index:1}
+.photo-overlay-sub{color:rgba(255,255,255,0.75);font-size:13px;margin-top:12px;text-align:center;animation:slide-up-overlay 1.2s;position:relative;z-index:1;line-height:1.7}
+.photo-overlay-btns{margin-top:1.8rem;display:flex;flex-direction:column;gap:10px;width:100%;max-width:280px;animation:slide-up-overlay 1.4s;position:relative;z-index:1}
+.photo-overlay-btn{background:#fff;color:#1a1a1a;border:none;border-radius:99px;padding:14px 24px;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px rgba(255,255,255,0.15)}
+.photo-overlay-btn.secondary{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);box-shadow:none}
+@keyframes photo-pop{0%{transform:scale(0.3);opacity:0;filter:blur(8px)}60%{transform:scale(1.05);opacity:1;filter:blur(0)}100%{transform:scale(1)}}
+@keyframes slide-up-overlay{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+
+/* 写真設定カード */
+.photo-slot{position:relative;background:var(--surface);border:2px dashed var(--border);border-radius:12px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:all 0.15s}
+.photo-slot.filled{border-style:solid}
+.photo-slot.locked{opacity:0.4;cursor:not-allowed;background:rgba(0,0,0,0.03)}
+.photo-slot img{width:100%;height:100%;object-fit:cover}
+.photo-slot-plus{font-size:28px;color:var(--text2);margin-bottom:4px}
+.photo-slot-label{font-size:10px;color:var(--text2);text-align:center;padding:0 4px;font-weight:700}
+.photo-slot-delete{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.photos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 </style>
 </head>
 <body>
 <div class="app">
 
 <div id="s-home" class="screen active">
+  <div class="app-title">🍺 飲みすぎチェッカー</div>
   <div id="pending-notice" style="display:none;margin-bottom:1rem"></div>
   <div class="tabs">
-    <button class="tab active" onclick="homeTab('start')">今夜記録</button>
+    <button class="tab active" onclick="homeTab('start')">今夜</button>
     <button class="tab" onclick="homeTab('history')">履歴</button>
     <button class="tab" onclick="homeTab('analysis')">分析</button>
+    <button class="tab" onclick="homeTab('badges')">🏆</button>
+    <button class="tab" onclick="homeTab('settings')">⚙️</button>
   </div>
   <div id="ht-start">
-    <button class="big-btn primary" onclick="startSession()">飲み会をはじめる</button>
-    <p class="muted" style="text-align:center;margin-top:10px">ボタンを押してから飲み始めてください</p>
+    <div id="streak-display" style="display:none"></div>
+    <div id="morning-comment" style="display:none"></div>
+    <div id="weekly-summary" style="display:none"></div>
+    <div id="usual-set" style="display:none"></div>
+    <button class="big-btn primary" onclick="startSession()" style="font-size:18px;padding:20px">🎉 飲み会をはじめる</button>
+    <p class="muted" style="text-align:center;margin-top:8px">ボタンを押してから飲み始めてください</p>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="big-btn" onclick="openQuickRecord()" style="font-size:13px;padding:12px;flex:1">⚡ ザックリ記録</button>
+      <button class="big-btn" onclick="togglePastForm();homeTab('history')" style="font-size:13px;padding:12px;flex:1">📝 詳細に記録</button>
+    </div>
   </div>
-  <div id="ht-history" style="display:none"><div id="history-list"></div></div>
+  <div id="ht-history" style="display:none">
+    <button class="big-btn" onclick="togglePastForm()" id="past-form-toggle-btn" style="margin-bottom:12px">📝 過去の記録を追加する</button>
+    <div id="past-form" style="display:none" class="card">
+      <div id="past-form-title" style="font-size:15px;font-weight:700;margin-bottom:12px">過去の飲み会を記録</div>
+      <div class="label">日付</div>
+      <input type="date" id="past-date" style="width:100%;font-size:14px;padding:8px 10px;border:2px solid var(--border);border-radius:10px;outline:none;background:var(--surface);color:var(--text);font-family:var(--font);margin-bottom:12px">
+      <div class="label">飲んだお酒（タップで選択）</div>
+      <div class="drink-grid" style="margin-bottom:4px">
+        <button class="d-btn" onclick="togglePastDrink('ビール',this)">🍺 ビール</button>
+        <button class="d-btn" onclick="togglePastDrink('ハイボール',this)">🥃 ハイボール</button>
+        <button class="d-btn" onclick="togglePastDrink('日本酒',this)">🍶 日本酒</button>
+        <button class="d-btn" onclick="togglePastDrink('ワイン',this)">🍷 ワイン</button>
+        <button class="d-btn" onclick="togglePastDrink('チューハイ',this)">🥤 チューハイ</button>
+        <button class="d-btn" onclick="togglePastDrink('焼酎',this)">🍵 焼酎</button>
+        <button class="d-btn" onclick="togglePastDrink('カクテル',this)">🍹 カクテル</button>
+        <button class="d-btn" onclick="togglePastDrink('梅酒',this)">🫙 梅酒</button>
+        <button class="d-btn" onclick="togglePastDrink('テキーラ',this)">🔥 テキーラ</button>
+        <button class="d-btn soft" onclick="togglePastDrink('ソフトドリンク',this)">💧 ソフトドリンク</button>
+      </div>
+      <div id="past-drink-counts" style="margin-bottom:12px;min-height:24px;font-size:13px;color:var(--text2)"></div>
+      <div class="label">翌朝の体の状態</div>
+      <div class="hangover-grid" style="margin-bottom:12px">
+        <button class="h-btn ok" id="past-h0" onclick="selectPastHangover(0)">😊 問題なし</button>
+        <button class="h-btn ok" id="past-h1" onclick="selectPastHangover(1)">😪 少しだるい</button>
+        <button class="h-btn ng" id="past-h2" onclick="selectPastHangover(2)">🤕 頭が痛い</button>
+        <button class="h-btn ng" id="past-h3" onclick="selectPastHangover(3)">💀 最悪だった</button>
+      </div>
+      <div class="label">記憶</div>
+      <div class="hangover-grid" style="margin-bottom:12px">
+        <button class="h-btn ok" id="past-m0" onclick="selectPastMemory(0)">✅ 全部覚えてる</button>
+        <button class="h-btn ok" id="past-m1" onclick="selectPastMemory(1)">🤔 ところどころ</button>
+        <button class="h-btn ng" id="past-m2" onclick="selectPastMemory(2)">😵 かなり曖昧</button>
+        <button class="h-btn ng" id="past-m3" onclick="selectPastMemory(3)">⬛ ほぼ覚えてない</button>
+      </div>
+      <div class="label">シーン（任意）</div>
+      <div id="past-scene-options" class="check-row" style="margin-bottom:12px"></div>
+      <div class="label">後悔したこと（任意・複数選択可）</div>
+      <div id="past-regret-options" class="check-row" style="margin-bottom:16px"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button class="big-btn" onclick="togglePastForm()">キャンセル</button>
+        <button class="big-btn primary" id="past-save-btn" onclick="savePastRecord()">保存する</button>
+      </div>
+    </div>
+    <div id="history-list"></div>
+  </div>
   <div id="ht-analysis" style="display:none"><div id="analysis-content"></div></div>
+  <div id="ht-badges" style="display:none"><div id="badges-content"></div></div>
+  <div id="ht-settings" style="display:none"><div id="settings-content"></div></div>
 </div>
 
 <div id="s-drinking" class="screen">
+  <div class="app-title" id="drinking-title">🍺 飲んでるよ</div>
   <div id="auto-end-banner" style="display:none" class="auto-banner">最後の記録から5時間経過したため自動終了しました</div>
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-    <div><div class="lbl">飲み始めてから</div><div class="timer" id="elapsed">00:00</div></div>
-    <div style="text-align:right"><div class="lbl">合計</div><div class="timer" id="total-cups">0杯</div></div>
+  <div class="timer-area" id="timer-area">
+    <div><div class="timer-label">飲み始めてから</div><div class="timer" id="elapsed">00:00</div></div>
+    <div style="text-align:right"><div class="timer-label">合計</div><div class="timer" id="total-cups">0杯</div></div>
   </div>
-  <div class="sec-title">何を飲んだ？（タップで記録）</div>
+  <div id="alco-meter-wrap" style="display:none" class="alco-meter">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:13px;font-weight:700" id="alco-label">純アルコール 0g</span>
+      <span style="font-size:11px" id="alco-status"></span>
+    </div>
+    <div class="meter-bar-bg"><div class="meter-bar" id="meter-bar" style="width:0%"></div></div>
+  </div>
+  <div id="soft-alert" style="display:none" class="soft-alert">
+    <span id="soft-alert-msg"></span>
+    <button class="soft-alert-btn" onclick="addDrink('ソフトドリンク')">今飲んだ</button>
+  </div>
+  <div id="drinking-warning" style="display:none" class="warning-banner"></div>
+  <div class="section-title" id="drink-section-label">何を飲んだ？（タップで記録）</div>
   <div class="drink-grid">
-    <button class="d-btn" onclick="addDrink('ビール')">ビール</button>
-    <button class="d-btn" onclick="addDrink('ハイボール')">ハイボール</button>
-    <button class="d-btn" onclick="addDrink('日本酒')">日本酒</button>
-    <button class="d-btn" onclick="addDrink('ワイン')">ワイン</button>
-    <button class="d-btn" onclick="addDrink('チューハイ')">チューハイ</button>
-    <button class="d-btn" onclick="addDrink('焼酎')">焼酎</button>
-    <button class="d-btn" onclick="addDrink('カクテル')">カクテル</button>
-    <button class="d-btn" onclick="addDrink('梅酒')">梅酒</button>
-    <button class="d-btn" onclick="addDrink('テキーラ')">テキーラ</button>
+    <button class="d-btn" onclick="addDrink('ビール')">🍺 ビール</button>
+    <button class="d-btn" onclick="addDrink('ハイボール')">🥃 ハイボール</button>
+    <button class="d-btn" onclick="addDrink('日本酒')">🍶 日本酒</button>
+    <button class="d-btn" onclick="addDrink('ワイン')">🍷 ワイン</button>
+    <button class="d-btn" onclick="addDrink('チューハイ')">🥤 チューハイ</button>
+    <button class="d-btn" onclick="addDrink('焼酎')">🍵 焼酎</button>
+    <button class="d-btn" onclick="addDrink('カクテル')">🍹 カクテル</button>
+    <button class="d-btn" onclick="addDrink('梅酒')">🫙 梅酒</button>
+    <button class="d-btn" onclick="addDrink('テキーラ')">🔥 テキーラ</button>
+    <button class="d-btn soft" onclick="addDrink('ソフトドリンク')">💧 ソフトドリンク</button>
   </div>
   <div class="custom-row">
-    <input type="text" id="custom-drink" placeholder="その他のお酒を入力...">
+    <input type="text" id="custom-drink" placeholder="その他を入力...">
     <button onclick="addCustomDrink()">追加</button>
   </div>
-  <div class="sec-title" style="margin-top:1.25rem">記録済み（−で1杯削除）</div>
-  <div id="drink-log"></div>
+  <div class="section-title" style="margin-top:1rem">食事・水分（任意）</div>
+  <div class="check-row">
+    <label class="check-pill" id="pill-food" onclick="toggleExtra('food')"><span>🍱 食事あり</span></label>
+    <label class="check-pill" id="pill-water" onclick="toggleExtra('water')"><span>💧 水を飲んだ</span></label>
+    <label class="check-pill" id="pill-snack" onclick="toggleExtra('snack')"><span>🥜 おつまみあり</span></label>
+  </div>
+  <div id="drink-log" style="margin-top:1rem"></div>
+  <div id="drinking-characters" style="display:none" class="char-row"></div>
   <div style="margin-top:1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-    <button class="big-btn" onclick="cancelSession()">キャンセル</button>
-    <button class="big-btn primary" onclick="goToHangoverStep()">飲み終わり</button>
+    <button class="big-btn" id="cancel-btn" onclick="cancelSession()">やめる</button>
+    <button class="big-btn primary" id="end-btn" onclick="goToHangoverStep()">飲み終わり 🌙</button>
   </div>
 </div>
 
 <div id="s-review" class="screen">
-  <div class="step-lbl" id="review-step-lbl">ステップ 1 / 2</div>
+  <div class="app-title">📋 振り返り</div>
+  <div class="step-label" id="review-step-label">ステップ 1 / 3</div>
   <div id="step-hangover">
-    <div style="font-size:16px;font-weight:500;margin-bottom:4px">昨夜の飲み会、どうでした？</div>
-    <div class="muted" id="hov-summary" style="margin-bottom:4px"></div>
-    <div class="sec-title">翌朝の体の状態は？</div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px">翌朝の体の状態は？</div>
+    <div class="muted" id="hov-summary" style="margin-bottom:12px"></div>
     <div class="hangover-grid">
-      <button class="h-btn ok" onclick="setHangover(0)">問題なし</button>
-      <button class="h-btn ok" onclick="setHangover(1)">少しだるい</button>
-      <button class="h-btn ng" onclick="setHangover(2)">頭が痛い</button>
-      <button class="h-btn ng" onclick="setHangover(3)">最悪だった</button>
+      <button class="h-btn ok" onclick="setHangover(0)">😊 問題なし</button>
+      <button class="h-btn ok" onclick="setHangover(1)">😪 少しだるい</button>
+      <button class="h-btn ng" onclick="setHangover(2)">🤕 頭が痛い</button>
+      <button class="h-btn ng" onclick="setHangover(3)">💀 最悪だった</button>
     </div>
   </div>
   <div id="step-memory" style="display:none">
-    <div style="font-size:16px;font-weight:500;margin-bottom:4px">記憶はありますか？</div>
-    <div class="muted" style="margin-bottom:4px">昨夜のことをどれくらい覚えていますか？</div>
-    <div class="hangover-grid" style="margin-top:12px">
-      <button class="h-btn ok" onclick="setMemory(0)">全部覚えてる</button>
-      <button class="h-btn ok" onclick="setMemory(1)">ところどころ</button>
-      <button class="h-btn ng" onclick="setMemory(2)">かなり曖昧</button>
-      <button class="h-btn ng" onclick="setMemory(3)">ほぼ覚えてない</button>
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px">記憶はありますか？</div>
+    <div class="muted" style="margin-bottom:12px">昨夜のことをどれくらい覚えていますか？</div>
+    <div class="hangover-grid">
+      <button class="h-btn ok" onclick="setMemory(0)">✅ 全部覚えてる</button>
+      <button class="h-btn ok" onclick="setMemory(1)">🤔 ところどころ</button>
+      <button class="h-btn ng" onclick="setMemory(2)">😵 かなり曖昧</button>
+      <button class="h-btn ng" onclick="setMemory(3)">⬛ ほぼ覚えてない</button>
     </div>
   </div>
-  <button class="big-btn" onclick="skipReview()" style="margin-top:8px">あとで記録する</button>
+  <div id="step-regret" style="display:none">
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px">昨夜の後悔は？</div>
+    <div class="muted" style="margin-bottom:12px">複数選択OK、なければスキップ</div>
+    <div id="regret-options" class="check-row" style="margin-bottom:12px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="big-btn" onclick="finalizeWithRegrets([])">後悔なし😊</button>
+      <button class="big-btn primary" onclick="saveRegrets()">保存する</button>
+    </div>
+  </div>
+  <button class="big-btn" onclick="skipReview()" style="margin-top:12px">あとで記録する</button>
+</div>
+
+<div id="s-quick" class="screen">
+  <div class="app-title">⚡ ザックリ記録</div>
+  <div class="muted" style="text-align:center;margin-bottom:1rem">30秒で完了。詳細な杯数は不要です</div>
+  <div class="label">いつ飲んだ？</div>
+  <div class="hangover-grid" style="margin-bottom:12px">
+    <button class="h-btn" id="q-when-today" onclick="setQuickWhen('today')">今日</button>
+    <button class="h-btn" id="q-when-yesterday" onclick="setQuickWhen('yesterday')">昨日</button>
+  </div>
+  <input type="date" id="q-custom-date" style="width:100%;font-size:14px;padding:8px 10px;border:2px solid var(--border);border-radius:10px;outline:none;background:var(--surface);color:var(--text);font-family:var(--font);margin-bottom:12px;display:none">
+  <button class="muted" onclick="toggleQuickCustomDate()" style="background:none;border:none;font-size:12px;cursor:pointer;margin-bottom:12px;text-decoration:underline;color:var(--text2)">他の日付を選ぶ</button>
+
+  <div class="label">どのくらい飲んだ？</div>
+  <div style="display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px">
+    <button class="h-btn ok" id="q-amt-light" onclick="setQuickAmount('light')">🍺 少なめ（1〜3杯程度）</button>
+    <button class="h-btn" id="q-amt-normal" onclick="setQuickAmount('normal')" style="background:#fff8e1;border-color:#ffd166;color:#7a5a00">🍻 普通（4〜6杯程度）</button>
+    <button class="h-btn ng" id="q-amt-heavy" onclick="setQuickAmount('heavy')">💀 多め（7杯以上）</button>
+  </div>
+
+  <div class="label">翌朝は？</div>
+  <div class="hangover-grid" style="margin-bottom:12px">
+    <button class="h-btn ok" id="q-h-ok" onclick="setQuickHangover(0)">😊 問題なし</button>
+    <button class="h-btn ok" id="q-h-tired" onclick="setQuickHangover(1)">😪 少しだるい</button>
+    <button class="h-btn ng" id="q-h-pain" onclick="setQuickHangover(2)">🤕 頭が痛い</button>
+    <button class="h-btn ng" id="q-h-worst" onclick="setQuickHangover(3)">💀 最悪</button>
+  </div>
+
+  <div class="label">記憶は？</div>
+  <div class="hangover-grid" style="margin-bottom:16px">
+    <button class="h-btn ok" id="q-m-all" onclick="setQuickMemory(0)">✅ 覚えてる</button>
+    <button class="h-btn ok" id="q-m-part" onclick="setQuickMemory(1)">🤔 ところどころ</button>
+    <button class="h-btn ng" id="q-m-vague" onclick="setQuickMemory(2)">😵 曖昧</button>
+    <button class="h-btn ng" id="q-m-none" onclick="setQuickMemory(3)">⬛ ほぼない</button>
+  </div>
+
+  <div class="label">後悔したこと（任意）</div>
+  <div id="q-regret-options" class="check-row" style="margin-bottom:16px"></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <button class="big-btn" onclick="showScreen('s-home')">キャンセル</button>
+    <button class="big-btn primary" onclick="saveQuickRecord()">保存する</button>
+  </div>
+</div>
+
+<div id="s-scene" class="screen">
+  <div class="app-title">🎭 今夜のシーンは？</div>
+  <div class="muted" style="text-align:center;margin-bottom:1rem">シーンで分けて分析できます</div>
+  <div id="scene-options" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem"></div>
+  <button class="big-btn" onclick="startSessionWithScene(null)" style="margin-bottom:8px">シーンなしで開始</button>
+  <button class="muted" onclick="showScreen('s-home')" style="background:none;border:none;cursor:pointer;width:100%;padding:8px;font-family:var(--font);font-size:13px">キャンセル</button>
 </div>
 
 </div>
 <script>
-const DRINKS_KEY='hov4_records';
-const SESSION_KEY='hov4_session';
+const DRINKS_KEY='hov5_records';
+const SESSION_KEY='hov5_session';
+const GOAL_KEY='hov5_goal';
+const SOFT_RATIO_KEY='hov5_soft_ratio';
 const AUTO_TIMEOUT=5*60*60*1000;
-let timerInterval=null,autoCheckInterval=null,session=null,pendingHangover=-1;
+const SOFT_DRINKS=new Set(['ソフトドリンク']);
+const ALCO_MAP={'ビール':20,'ハイボール':14,'日本酒':22,'ワイン':18,'チューハイ':14,'焼酎':20,'カクテル':10,'梅酒':12,'テキーラ':20};
+const DEFAULT_ALCO=15;
+
+// シーン定義
+const SCENES=[
+  {id:'sessetai',icon:'💼',label:'接待・会食'},
+  {id:'company',icon:'🏢',label:'会社の飲み会'},
+  {id:'friends',icon:'👥',label:'友達と'},
+  {id:'date',icon:'💑',label:'デート'},
+  {id:'family',icon:'👨‍👩‍👧',label:'家族・親戚'},
+  {id:'home',icon:'🏠',label:'家飲み'},
+  {id:'solo',icon:'🧘',label:'一人飲み'},
+  {id:'celebration',icon:'🎉',label:'お祝い'}
+];
+
+// 後悔ログ定義
+const REGRETS=[
+  {id:'wallet',icon:'👛',label:'財布を失くした'},
+  {id:'phone',icon:'📱',label:'スマホを失くした'},
+  {id:'umbrella',icon:'☂️',label:'傘を失くした'},
+  {id:'item',icon:'🎒',label:'他の物を失くした'},
+  {id:'line',icon:'💬',label:'LINE誤爆・後悔メッセージ'},
+  {id:'call',icon:'📞',label:'電話かけすぎ'},
+  {id:'sns',icon:'🐦',label:'SNSに変な投稿'},
+  {id:'fight',icon:'💢',label:'人と揉めた'},
+  {id:'taxi',icon:'🚕',label:'タクシー代使いすぎ'},
+  {id:'eat',icon:'🍜',label:'締めラーメン食べた'},
+  {id:'miss',icon:'🚃',label:'終電逃した'},
+  {id:'work',icon:'📉',label:'翌日仕事に影響'},
+  {id:'health',icon:'🤢',label:'体調崩した'},
+  {id:'money',icon:'💸',label:'お金使いすぎ'},
+  {id:'nofault',icon:'😅',label:'記憶がないから分からない'}
+];
+
+// キャラクター定義
+const DRINK_CHARS={
+  'ビール':{emoji:'🍺',name:'ビール君',type:'friendly'},
+  'ハイボール':{emoji:'🥃',name:'ハイボラ氏',type:'cool'},
+  '日本酒':{emoji:'🍶',name:'酒仙人',type:'traditional'},
+  'ワイン':{emoji:'🍷',name:'ワインマダム',type:'elegant'},
+  'チューハイ':{emoji:'🥤',name:'チュハ坊',type:'friendly'},
+  '焼酎':{emoji:'🍵',name:'焼酎おじ',type:'traditional'},
+  'カクテル':{emoji:'🍹',name:'カクテルちゃん',type:'elegant'},
+  '梅酒':{emoji:'🫙',name:'梅じい',type:'traditional'},
+  'テキーラ':{emoji:'🔥',name:'炎の魔王',type:'danger'},
+  'ソフトドリンク':{emoji:'😇',name:'天使',type:'angel'}
+};
+
+// バッジ定義（健康・節制・継続フォーカス、レベル対応）
+// check(records, level) - レベルが上がるほど閾値が厳しくなる
+// records は現在のレベル開始以降でフィルタ済み
+const ACHIEVEMENTS=[
+  // 記録・継続系（レベルごとに閾値が厳しくなる）
+  {id:'first',icon:'🎉',name:'初めの一杯',desc:'初めて記録',category:'記録',hint:(lv)=>'飲み会を1回記録する',check:(r,lv)=>r.length>=1},
+  {id:'rec3',icon:'📝',name:'記録の達人',desc:'記録を積む',category:'記録',hint:(lv)=>`飲み会を${3*lv}回記録する`,check:(r,lv)=>r.length>=3*lv},
+  {id:'rec10',icon:'📚',name:'記録マスター',desc:'記録を重ねる',category:'記録',hint:(lv)=>`飲み会を${10*lv}回記録する`,check:(r,lv)=>r.length>=10*lv},
+  {id:'rec25',icon:'📖',name:'記録の賢者',desc:'膨大な記録',category:'記録',hint:(lv)=>`飲み会を${25*lv}回記録する`,check:(r,lv)=>r.length>=25*lv},
+  {id:'past-rec',icon:'⏪',name:'時をかける記録者',desc:'過去も残す',category:'記録',hint:(lv)=>`過去の記録を${lv}回以上追加する`,check:(r,lv)=>r.filter(x=>x.isPastRecord).length>=lv},
+  {id:'streak3',icon:'🔥',name:'連続記録',desc:'続けて記録',category:'継続',hint:(lv)=>`${3*lv}回連続で記録（1週間以内）`,check:(r,lv)=>getStreakFromRecords(r)>=3*lv},
+  {id:'streak5',icon:'🔥🔥',name:'継続の達人',desc:'もっと連続',category:'継続',hint:(lv)=>`${5*lv}回連続で記録（1週間以内）`,check:(r,lv)=>getStreakFromRecords(r)>=5*lv},
+  {id:'streak10',icon:'🔥🔥🔥',name:'不屈の記録者',desc:'驚異の連続',category:'継続',hint:(lv)=>`${10*lv}回連続で記録（1週間以内）`,check:(r,lv)=>getStreakFromRecords(r)>=10*lv},
+
+  // 健康管理系（二日酔いを防ぐ）
+  {id:'no-hangover-3',icon:'✨',name:'二日酔い回避',desc:'健康な飲み方',category:'健康',hint:(lv)=>`${3*lv}連続で翌朝「問題なし」か「少しだるい」`,check:(r,lv)=>{let c=0;for(const x of r){if(x.hangover<=1)c++;else c=0;if(c>=3*lv)return true;}return false;}},
+  {id:'no-hangover-10',icon:'🌟',name:'鉄の肝臓',desc:'驚異の肝臓',category:'健康',hint:(lv)=>`${10*lv}連続で翌朝「問題なし」か「少しだるい」`,check:(r,lv)=>{let c=0;for(const x of r){if(x.hangover<=1)c++;else c=0;if(c>=10*lv)return true;}return false;}},
+  {id:'no-hangover-rate',icon:'💪',name:'二日酔い知らず',desc:'二日酔い率が低い',category:'健康',hint:(lv)=>`${10+5*lv}回以上記録して二日酔い率${Math.max(10,30-lv*5)}%以下`,check:(r,lv)=>{if(r.length<10+5*lv)return false;const rate=r.filter(x=>x.hangover>=2).length/r.length*100;return rate<=Math.max(10,30-lv*5);}},
+  {id:'moderate',icon:'🧘',name:'ほどほど上手',desc:'節度ある飲み方',category:'健康',hint:(lv)=>`純アルコール20g以下で終わった日が${3*lv}回`,check:(r,lv)=>r.filter(x=>x.alco>0&&x.alco<=20).length>=3*lv},
+  {id:'moderate10',icon:'🕊️',name:'聖人君子',desc:'究極の節制',category:'健康',hint:(lv)=>`純アルコール20g以下で終わった日が${10*lv}回`,check:(r,lv)=>r.filter(x=>x.alco>0&&x.alco<=20).length>=10*lv},
+  {id:'recovery',icon:'🌱',name:'回復力',desc:'立ち直りが早い',category:'健康',hint:(lv)=>`二日酔いの翌回を控えめ(20g以下)で終えた×${lv}回`,check:(r,lv)=>{const s=[...r].reverse();let cnt=0;for(let i=0;i<s.length-1;i++){if(s[i].hangover>=2&&s[i+1].alco>0&&s[i+1].alco<=20)cnt++;}return cnt>=lv;}},
+  {id:'food-companion',icon:'🍱',name:'食と共に',desc:'食事と一緒に',category:'健康',hint:(lv)=>`「食事あり」を記録した日が${5*lv}回`,check:(r,lv)=>r.filter(x=>x.extras?.food).length>=5*lv},
+  {id:'water-friend',icon:'💦',name:'水分補給の達人',desc:'水をしっかり',category:'健康',hint:(lv)=>`「水を飲んだ」を記録した日が${5*lv}回`,check:(r,lv)=>r.filter(x=>x.extras?.water).length>=5*lv},
+
+  // 記憶管理系
+  {id:'memory-keeper',icon:'🧠',name:'記憶の番人',desc:'記憶をしっかり',category:'記憶',hint:(lv)=>`${5*lv}連続で「全部覚えてる」か「ところどころ」`,check:(r,lv)=>{let c=0;for(const x of r){if(x.memory<=1)c++;else c=0;if(c>=5*lv)return true;}return false;}},
+  {id:'memory-10',icon:'📸',name:'すべて記憶',desc:'記憶の鉄人',category:'記憶',hint:(lv)=>`「全部覚えてる」の日が${10*lv}回`,check:(r,lv)=>r.filter(x=>x.memory===0).length>=10*lv},
+  {id:'memory-rate',icon:'🎯',name:'記憶率マスター',desc:'記憶率が高い',category:'記憶',hint:(lv)=>`${10+5*lv}回以上記録して記憶喪失率${Math.max(10,30-lv*5)}%以下`,check:(r,lv)=>{if(r.length<10+5*lv)return false;const rate=r.filter(x=>x.memory>=2).length/r.length*100;return rate<=Math.max(10,30-lv*5);}},
+
+  // ソフトドリンク系（節制の味方）
+  {id:'soft-first',icon:'💧',name:'天使の一滴',desc:'ソフトデビュー',category:'ソフト',hint:(lv)=>`ソフトドリンクを挟んだ日が${lv}回`,check:(r,lv)=>r.filter(x=>x.drinkCounts?.['ソフトドリンク']).length>=lv},
+  {id:'soft5',icon:'💧💧',name:'ソフト派',desc:'ソフト習慣化',category:'ソフト',hint:(lv)=>`ソフトドリンクを挟んだ日が${5*lv}回`,check:(r,lv)=>r.filter(x=>x.drinkCounts?.['ソフトドリンク']).length>=5*lv},
+  {id:'soft15',icon:'💧💧💧',name:'ソフトマスター',desc:'ソフトの達人',category:'ソフト',hint:(lv)=>`ソフトドリンクを挟んだ日が${15*lv}回`,check:(r,lv)=>r.filter(x=>x.drinkCounts?.['ソフトドリンク']).length>=15*lv},
+  {id:'angel-protect',icon:'😇',name:'天使の守護',desc:'ソフトで回避',category:'ソフト',hint:(lv)=>`ソフトあり＆二日酔いなしの日が${5*lv}回`,check:(r,lv)=>r.filter(x=>x.drinkCounts?.['ソフトドリンク']&&x.hangover<=1).length>=5*lv},
+  {id:'ratio-half',icon:'⚖️',name:'ハーフ＆ハーフ',desc:'バランス派',category:'ソフト',hint:(lv)=>`お酒とソフトを半々で飲む日が${lv}回`,check:(r,lv)=>r.filter(x=>{const a=Object.entries(x.drinkCounts||{}).filter(([n])=>!SOFT_DRINKS.has(n)).reduce((s,[,c])=>s+c,0);const s=x.drinkCounts?.['ソフトドリンク']||0;return a>=2&&s/a>=0.5;}).length>=lv},
+  {id:'soft-streak',icon:'🌊',name:'連続ソフト',desc:'毎回ソフトを挟む',category:'ソフト',hint:(lv)=>`${3*lv}回連続でソフトドリンクを挟む`,check:(r,lv)=>{let c=0;for(const x of r){if(x.drinkCounts?.['ソフトドリンク'])c++;else c=0;if(c>=3*lv)return true;}return false;}},
+
+  // 成長系
+  {id:'improvement',icon:'📈',name:'成長の証',desc:'記録が改善',category:'成長',hint:(lv)=>`${10*lv}回以上記録して、前半と後半で二日酔い率が改善`,check:(r,lv)=>{if(r.length<10*lv)return false;const mid=Math.floor(r.length/2);const first=r.slice(mid);const last=r.slice(0,mid);return (first.filter(x=>x.hangover>=2).length/first.length)>(last.filter(x=>x.hangover>=2).length/last.length);}},
+  {id:'month-goal',icon:'🎯',name:'目標達成',desc:'月の目標達成',category:'成長',hint:(lv)=>`目標を設定して、その月の飲み会回数を目標以内に（${lv}ヶ月連続）`,check:(r,lv)=>{const g=loadGoal();if(!g)return false;const tm=new Date().toISOString().slice(0,7).replace('-','/');const cnt=r.filter(x=>{const d=new Date(x.startTime);return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}`===tm;}).length;return cnt>0&&cnt<=g;}},
+  {id:'early-end',icon:'🌙',name:'早めの撤退',desc:'2時間以内に切り上げ',category:'成長',hint:(lv)=>`飲み会を2時間以内に終えた日が${3*lv}回`,check:(r,lv)=>r.filter(x=>{if(!x.endTime||!x.startTime)return false;const dur=(new Date(x.endTime)-new Date(x.startTime))/(1000*60*60);return dur>0&&dur<=2;}).length>=3*lv}
+];
+
+// バッジ判定用のストリーク（レベル内の記録だけで計算）
+function getStreakFromRecords(records){
+  if(!records.length)return 0;
+  const sorted=[...records].sort((a,b)=>new Date(b.startTime)-new Date(a.startTime));
+  const dates=[...new Set(sorted.map(r=>new Date(r.startTime).toDateString()))];
+  let streak=1;
+  for(let i=1;i<dates.length;i++){
+    const diff=(new Date(dates[i-1])-new Date(dates[i]))/(1000*60*60*24);
+    if(diff<=7)streak++;
+    else break;
+  }
+  return streak;
+}
+
+// ストリーク計算（飲んだ日のうち記録した連続日数）
+function getStreak(records){
+  if(!records.length)return 0;
+  const sorted=[...records].sort((a,b)=>new Date(b.startTime)-new Date(a.startTime));
+  const dates=[...new Set(sorted.map(r=>new Date(r.startTime).toDateString()))];
+  let streak=1;
+  for(let i=1;i<dates.length;i++){
+    const diff=(new Date(dates[i-1])-new Date(dates[i]))/(1000*60*60*24);
+    if(diff<=7)streak++;
+    else break;
+  }
+  return streak;
+}
+
+// 「いつもの」セット計算（直近5回でよく飲む組み合わせ）
+function getUsualSet(records){
+  if(records.length<3)return null;
+  const recent=records.slice(0,5);
+  const totals={};
+  recent.forEach(r=>{
+    Object.entries(r.drinkCounts||{}).forEach(([n,c])=>{totals[n]=(totals[n]||0)+c;});
+  });
+  const entries=Object.entries(totals).filter(([n])=>!SOFT_DRINKS.has(n)).sort(([,a],[,b])=>b-a).slice(0,3);
+  if(!entries.length)return null;
+  return entries.map(([n,c])=>({name:n,count:Math.round(c/recent.length)||1}));
+}
+
+// 今週の記録
+function getThisWeekRecords(records){
+  const now=new Date();
+  const weekAgo=new Date(now.getTime()-7*24*60*60*1000);
+  return records.filter(r=>new Date(r.startTime)>=weekAgo);
+}
+
+
+// ホラーレベル段階定義（設定で変更可能）
+const DEFAULT_THRESHOLDS={lv1:3,lv2:5,lv3:7,lv4:10};
+function loadThresholds(){
+  try{
+    const v=JSON.parse(localStorage.getItem('hov5_thresholds')||'null');
+    return v||{...DEFAULT_THRESHOLDS};
+  }catch{return {...DEFAULT_THRESHOLDS};}
+}
+function saveThresholds(t){try{localStorage.setItem('hov5_thresholds',JSON.stringify(t))}catch{}}
+
+function getHorrorLevels(){
+  const t=loadThresholds();
+  return [
+    {minCups:0,     cls:'',    title:'🍺 飲んでるよ',       section:'何を飲んだ？（タップで記録）', endLabel:'飲み終わり 🌙', cancelLabel:'やめる'},
+    {minCups:t.lv1, cls:'',    title:'🍻 いい感じ〜',        section:'まだまだいく？',               endLabel:'そろそろ帰る 🌙', cancelLabel:'やめる'},
+    {minCups:t.lv2, cls:'lv2', title:'😵 ちょっとやばいかも', section:'本当に飲む？',                endLabel:'帰る...', cancelLabel:'やめる'},
+    {minCups:t.lv3, cls:'lv3', title:'💀 助けて',            section:'やめてください',               endLabel:'もう帰れ', cancelLabel:'逃げる'},
+    {minCups:t.lv4, cls:'lv4', title:'☠️ ﾔﾊﾞｲ ｺﾚﾊﾔﾊﾞｲ',    section:'ﾅｾﾞﾏﾀﾉﾝﾃﾞﾙ',              endLabel:'ｶｴﾚ', cancelLabel:'ﾆｹﾞﾛ'},
+  ];
+}
+
+let timerInterval=null, autoCheckInterval=null, session=null, pendingHangover=-1, lastAppliedCups=-1;
 
 function load(){try{return JSON.parse(localStorage.getItem(DRINKS_KEY)||'[]')}catch{return[]}}
 function save(r){try{localStorage.setItem(DRINKS_KEY,JSON.stringify(r))}catch{}}
 function loadSession(){try{const s=localStorage.getItem(SESSION_KEY);return s?JSON.parse(s):null}catch{return null}}
 function saveSession(s){try{localStorage.setItem(SESSION_KEY,s?JSON.stringify(s):null)}catch{}}
+function loadGoal(){try{return parseInt(localStorage.getItem(GOAL_KEY)||'0')||0}catch{return 0}}
+function saveGoal(v){try{localStorage.setItem(GOAL_KEY,v)}catch{}}
+function loadSoftRatio(){try{const v=parseFloat(localStorage.getItem(SOFT_RATIO_KEY));return isNaN(v)?3:v}catch{return 3}}
+function saveSoftRatio(v){try{localStorage.setItem(SOFT_RATIO_KEY,v)}catch{}}
+
+// レベル管理
+const LEVEL_KEY='hov5_level';
+const LEVEL_START_KEY='hov5_level_start';
+const PHOTOS_KEY='hov5_photos';
+const PHOTO_LAST_SHOWN_KEY='hov5_photo_last_shown';
+
+// 写真管理
+function loadPhotos(){try{return JSON.parse(localStorage.getItem(PHOTOS_KEY)||'[]')}catch{return[]}}
+function savePhotos(arr){try{localStorage.setItem(PHOTOS_KEY,JSON.stringify(arr))}catch(e){alert('保存に失敗しました。写真サイズが大きすぎる可能性があります。')}}
+function getMaxPhotoSlots(level){return Math.min(10,level)}
+function loadPhotoLastShown(){try{return parseInt(localStorage.getItem(PHOTO_LAST_SHOWN_KEY)||'0')}catch{return 0}}
+function savePhotoLastShown(t){try{localStorage.setItem(PHOTO_LAST_SHOWN_KEY,t)}catch{}}
+function loadLevel(){try{return parseInt(localStorage.getItem(LEVEL_KEY)||'1')||1}catch{return 1}}
+function saveLevel(v){try{localStorage.setItem(LEVEL_KEY,v)}catch{}}
+function loadLevelStart(){
+  try{
+    const v=localStorage.getItem(LEVEL_START_KEY);
+    if(v)return new Date(v).getTime();
+    const t=Date.now();
+    localStorage.setItem(LEVEL_START_KEY,new Date(t).toISOString());
+    return t;
+  }catch{return Date.now()}
+}
+function saveLevelStart(t){try{localStorage.setItem(LEVEL_START_KEY,new Date(t).toISOString())}catch{}}
+
+// 現在のレベルの判定対象レコードを取得（レベル開始後のみ）
+function getCurrentLevelRecords(){
+  const start=loadLevelStart();
+  return load().filter(r=>new Date(r.startTime).getTime()>=start);
+}
+
+// レベル情報
+function getLevelInfo(lv){
+  const tiers=[
+    {lv:1,title:'見習い',icon:'🌱',color:'#06d6a0',desc:'健康な飲み会の始まり'},
+    {lv:2,title:'初級',icon:'🥉',color:'#cd7f32',desc:'習慣が身につき始める'},
+    {lv:3,title:'中級',icon:'🥈',color:'#c0c0c0',desc:'コントロールできるように'},
+    {lv:4,title:'上級',icon:'🥇',color:'#ffd700',desc:'安定した飲み方'},
+    {lv:5,title:'達人',icon:'🏆',color:'#ff6b35',desc:'周りの模範に'},
+    {lv:6,title:'師範',icon:'👑',color:'#9b59b6',desc:'後輩に教えるレベル'},
+    {lv:7,title:'賢者',icon:'💎',color:'#3498db',desc:'飲み方の哲学を持つ'},
+    {lv:8,title:'仙人',icon:'🌟',color:'#e74c3c',desc:'悟りの境地'},
+    {lv:9,title:'伝説',icon:'⭐',color:'#f39c12',desc:'もはや伝説'},
+    {lv:10,title:'神話',icon:'✨',color:'#1abc9c',desc:'神話級の節制'}
+  ];
+  if(lv<=tiers.length)return tiers[lv-1];
+  return{lv,title:`超越者${lv-10}段`,icon:'🌌',color:'#8e44ad',desc:'人知を超えた存在'};
+}
+
+function getAllLevelInfos(){
+  const infos=[];
+  for(let i=1;i<=15;i++)infos.push(getLevelInfo(i));
+  return infos;
+}
+
+function loadSoftRatio(){try{const v=parseFloat(localStorage.getItem(SOFT_RATIO_KEY));return isNaN(v)?3:v}catch{return 3}}
+function saveSoftRatio(v){try{localStorage.setItem(SOFT_RATIO_KEY,v)}catch{}}
+
+function calcAlco(drinkLog){
+  return drinkLog.filter(d=>!SOFT_DRINKS.has(d.name)).reduce((sum,d)=>sum+(ALCO_MAP[d.name]||DEFAULT_ALCO),0);
+}
+
+function calcIdealSoftRatio(){
+  const records=load();
+  const goodRecs=records.filter(r=>r.hangover<=1&&r.drinkCounts?.['ソフトドリンク']);
+  if(goodRecs.length<2)return null;
+  const ratios=goodRecs.map(r=>{
+    const ac=Object.entries(r.drinkCounts).filter(([n])=>!SOFT_DRINKS.has(n)).reduce((s,[,c])=>s+c,0);
+    const sc=r.drinkCounts['ソフトドリンク']||0;
+    return ac>0?sc/ac:0;
+  }).filter(v=>v>0);
+  if(!ratios.length)return null;
+  return ratios.reduce((a,b)=>a+b,0)/ratios.length;
+}
+
+function applyHorrorLevel(alcoCount){
+  if(alcoCount===lastAppliedCups)return;
+  lastAppliedCups=alcoCount;
+  const levels=getHorrorLevels();
+  let def=levels[0];
+  for(const l of levels){if(alcoCount>=l.minCups)def=l;}
+  document.body.className=def.cls;
+  const t=document.getElementById('drinking-title');if(t)t.textContent=def.title;
+  const sl=document.getElementById('drink-section-label');if(sl)sl.textContent=def.section;
+  const eb=document.getElementById('end-btn');if(eb)eb.textContent=def.endLabel;
+  const cb=document.getElementById('cancel-btn');if(cb)cb.textContent=def.cancelLabel;
+}
 
 function init(){
+  loadLevelStart(); // レベル開始時刻を初期化
   session=loadSession();
-  if(!session){showScreen('s-home');return;}
+  if(!session){showScreen('s-home');renderHomeWidgets();return;}
   if(session.phase==='drinking'){
-    const last=session.drinkLog.length?new Date(session.drinkLog[session.drinkLog.length-1].time).getTime():new Date(session.startTime).getTime();
-    if(Date.now()-last>=AUTO_TIMEOUT){
-      session.phase='hangover';session.endTime=new Date(last+AUTO_TIMEOUT).toISOString();session.autoEnded=true;
-      saveSession(session);showPendingNotice();showScreen('s-home');
-    } else {showScreen('s-drinking');startTimer();startAutoCheck();renderDrinkLog();}
-  } else if(session.phase==='hangover'){showPendingNotice();showScreen('s-home');}
+    const lastAct=session.drinkLog.length?new Date(session.drinkLog[session.drinkLog.length-1].time).getTime():new Date(session.startTime).getTime();
+    if(Date.now()-lastAct>=AUTO_TIMEOUT){
+      session.phase='hangover';session.endTime=new Date(lastAct+AUTO_TIMEOUT).toISOString();session.autoEnded=true;
+      saveSession(session);showPendingNotice();showScreen('s-home');renderHomeWidgets();
+    } else {
+      showScreen('s-drinking');startTimer();startAutoCheck();renderDrinkLog();renderExtraChecks();
+    }
+  } else if(session.phase==='hangover'){showPendingNotice();showScreen('s-home');renderHomeWidgets();}
 }
 
 function showPendingNotice(){
@@ -167,8 +707,8 @@ function showPendingNotice(){
   if(!session||session.phase!=='hangover'){el.style.display='none';return;}
   el.style.display='block';
   const auto=session.autoEnded?'（自動終了）':'';
-  el.innerHTML=`<div class="card" style="border-color:#85B7EB">
-    <div style="font-size:13px;font-weight:500;color:#0C447C;margin-bottom:4px">昨夜の記録が未完了です ${auto}</div>
+  el.innerHTML=`<div class="card" style="border-color:#118ab2">
+    <div style="font-size:13px;font-weight:700;color:#118ab2;margin-bottom:4px">📝 昨夜の記録が未完了です${auto}</div>
     <div class="muted" style="margin-bottom:10px">${session.date} — ${totalCups()}杯</div>
     <button class="big-btn" onclick="openReviewFromHome()" style="font-size:13px;padding:10px">翌朝の状態を記録する</button>
   </div>`;
@@ -183,18 +723,121 @@ function openReviewFromHome(){
   homeTab('start');showScreen('s-review');
   document.getElementById('step-hangover').style.display='block';
   document.getElementById('step-memory').style.display='none';
-  document.getElementById('review-step-lbl').textContent='ステップ 1 / 2';
-  pendingHangover=-1;
+  document.getElementById('step-regret').style.display='none';
+  document.getElementById('review-step-label').textContent='ステップ 1 / 3';
+  pendingHangover=-1;pendingMemory=-1;pendingRegrets=[];
   const counts={};(session.drinkLog||[]).forEach(d=>{counts[d.name]=(counts[d.name]||0)+1;});
-  document.getElementById('hov-summary').textContent=session.date+' — '+Object.entries(counts).map(([n,c])=>`${n} ${c}杯`).join('、');
+  const alco=calcAlco(session.drinkLog||[]);
+  document.getElementById('hov-summary').textContent=session.date+' — '+Object.entries(counts).map(([n,c])=>`${n} ${c}杯`).join('、')+` / 純アルコール約${alco}g`;
 }
 
 function homeTab(t){
-  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['start','history','analysis'][i]===t));
-  ['ht-start','ht-history','ht-analysis'].forEach(id=>document.getElementById(id).style.display='none');
+  const tabs=['start','history','analysis','badges','settings'];
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',tabs[i]===t));
+  tabs.forEach(id=>document.getElementById('ht-'+id).style.display='none');
   document.getElementById('ht-'+t).style.display='block';
+  if(t==='start')renderHomeWidgets();
   if(t==='history')renderHistory();
   if(t==='analysis')renderAnalysis();
+  if(t==='badges')renderBadges();
+  if(t==='settings')renderSettings();
+}
+
+function renderHomeWidgets(){
+  const records=load();
+
+  // ストリーク
+  const streak=getStreak(records);
+  const streakEl=document.getElementById('streak-display');
+  if(streak>=2){
+    streakEl.style.display='flex';
+    streakEl.className='streak-display';
+    streakEl.innerHTML=`<span class="streak-flame">🔥</span><span>記録ストリーク ${streak}回連続！</span>`;
+  } else {streakEl.style.display='none';}
+
+  // 翌朝コメント（直近24時間以内の記録があれば表示）
+  const morningEl=document.getElementById('morning-comment');
+  const lastRec=records[0];
+  if(lastRec){
+    const hoursSince=(Date.now()-new Date(lastRec.startTime).getTime())/(1000*60*60);
+    const morningKey='shownMorning_'+lastRec.id;
+    if(hoursSince<=36&&hoursSince>=4){
+      morningEl.style.display='block';
+      morningEl.className='morning-card';
+      morningEl.innerHTML=`<div class="morning-title">☀️ 翌朝コメント</div>
+        <div class="morning-msg" id="morning-msg-text">${generateMorningComment(lastRec)}</div>
+        <div style="text-align:right;margin-top:8px"><button class="export-btn" onclick="refreshMorningComment(${lastRec.id})">🔄 別のコメント</button></div>`;
+    } else {morningEl.style.display='none';}
+  } else {morningEl.style.display='none';}
+
+  // 週次サマリー
+  const weeklyEl=document.getElementById('weekly-summary');
+  const thisWeek=getThisWeekRecords(records);
+  if(thisWeek.length>=1){
+    const cups=thisWeek.reduce((s,r)=>s+Object.values(r.drinkCounts||{}).reduce((a,b)=>a+b,0),0);
+    const hangovers=thisWeek.filter(r=>r.hangover>=2).length;
+    weeklyEl.style.display='block';
+    weeklyEl.className='weekly-summary';
+    weeklyEl.innerHTML=`<div class="weekly-title">📊 今週のサマリー</div>
+      <div class="weekly-stats">
+        <div class="weekly-stat"><strong>${thisWeek.length}</strong>回の飲み会</div>
+        <div class="weekly-stat"><strong>${cups}</strong>杯</div>
+        <div class="weekly-stat"><strong>${hangovers}</strong>回の二日酔い</div>
+      </div>`;
+  } else {weeklyEl.style.display='none';}
+
+  // 「いつもの」セット
+  const usual=getUsualSet(records);
+  const usualEl=document.getElementById('usual-set');
+  if(usual&&usual.length){
+    usualEl.style.display='block';
+    usualEl.className='usual-card';
+    const summary=usual.map(u=>`${u.name}×${u.count}`).join('・');
+    usualEl.innerHTML=`<div class="usual-info"><div style="font-size:11px;font-weight:700;margin-bottom:2px">🎯 いつものセット</div>${summary}</div>
+      <button class="usual-btn" onclick="startSessionWithUsual()">いつもので開始</button>`;
+  } else {usualEl.style.display='none';}
+}
+
+function refreshMorningComment(recId){
+  const records=load();
+  const rec=records.find(r=>r.id===recId);
+  if(!rec)return;
+  const el=document.getElementById('morning-msg-text');
+  if(el)el.textContent=generateMorningComment(rec,true);
+}
+
+function generateMorningComment(rec,random=false){
+  const cups=Object.values(rec.drinkCounts||{}).reduce((a,b)=>a+b,0);
+  const alco=rec.alco||0;
+  const h=rec.hangover,m=rec.memory;
+  const topDrink=Object.entries(rec.drinkCounts||{}).filter(([n])=>!SOFT_DRINKS.has(n)).sort(([,a],[,b])=>b-a)[0]?.[0];
+  const hasSoft=!!rec.drinkCounts?.['ソフトドリンク'];
+  const comments=[];
+  if(h===0&&m===0)comments.push('完璧な飲み会でしたね。今日も一日がんばれそう！','さすがの制御力。今夜も期待してます。','模範的な飲み方でした。記録残しといてよかったですね。');
+  if(h>=2&&m>=2)comments.push(`${cups}杯はやりすぎ…大丈夫ですか？水飲んで安静に。`,'昨夜のことは封印しましょう。次は気をつけて。','記憶がないのに記録が残ってる、この文明の利器に感謝を。');
+  if(topDrink==='テキーラ')comments.push(`テキーラ${rec.drinkCounts['テキーラ']}杯…炎の魔王を召喚しましたね。`,'テキーラに手を出したあなたは勇者か無謀者か。');
+  if(alco>=60)comments.push(`純アルコール${alco}g…よく生きてましたね。`,'今日は何もせず休むのが正解です。');
+  if(hasSoft&&h<=1)comments.push('ソフトドリンクを挟んだ効果、出てますね！','天使（ソフトドリンク）があなたを守ってくれました。');
+  if(!hasSoft&&h>=2)comments.push('次回はソフトドリンクを挟んでみましょう。','天使を召喚し忘れましたね…次回はぜひ。');
+  if(cups<=3)comments.push('控えめな夜でしたね。大人の飲み方。');
+  if(cups>=10)comments.push(`${cups}杯…祝杯ですか？それとも逃避ですか？`);
+  comments.push(`昨夜は${cups}杯でしたね。お疲れさまでした。`);
+  if(random||!comments.length)return comments[Math.floor(Math.random()*comments.length)];
+  return comments[Math.floor(Math.random()*Math.min(3,comments.length))];
+}
+
+function startSessionWithUsual(){
+  const records=load();
+  const usual=getUsualSet(records);
+  if(!usual){startSession();return;}
+  const now=new Date();
+  const drinkLog=[];
+  usual.forEach(u=>{for(let i=0;i<u.count;i++)drinkLog.push({name:u.name,time:new Date(now.getTime()+i*1000).toISOString()});});
+  session={phase:'drinking',startTime:now.toISOString(),date:now.toLocaleDateString('ja-JP'),drinks:usual.map(u=>u.name),drinkLog,extras:{food:false,water:false,snack:false},autoEnded:false,scene:null};
+  saveSession(session);lastAppliedCups=-1;document.body.className='';
+  showScreen('s-drinking');
+  document.getElementById('auto-end-banner').style.display='none';
+  startTimer();startAutoCheck();renderDrinkLog();renderExtraChecks();
 }
 
 function showScreen(id){
@@ -203,11 +846,19 @@ function showScreen(id){
 }
 
 function startSession(){
+  // シーン選択画面を表示
+  const el=document.getElementById('scene-options');
+  el.innerHTML=SCENES.map(s=>`<button class="big-btn" onclick="startSessionWithScene('${s.id}')" style="padding:16px 8px;font-size:13px;text-align:center">${s.icon}<br>${s.label}</button>`).join('');
+  showScreen('s-scene');
+}
+
+function startSessionWithScene(sceneId){
   const now=new Date();
-  session={phase:'drinking',startTime:now.toISOString(),date:now.toLocaleDateString('ja-JP'),drinks:[],drinkLog:[],autoEnded:false};
-  saveSession(session);showScreen('s-drinking');
+  session={phase:'drinking',startTime:now.toISOString(),date:now.toLocaleDateString('ja-JP'),drinks:[],drinkLog:[],extras:{food:false,water:false,snack:false},autoEnded:false,scene:sceneId};
+  saveSession(session);lastAppliedCups=-1;document.body.className='';
+  showScreen('s-drinking');
   document.getElementById('auto-end-banner').style.display='none';
-  startTimer();startAutoCheck();renderDrinkLog();
+  startTimer();startAutoCheck();renderDrinkLog();renderExtraChecks();
 }
 
 function startTimer(){
@@ -216,7 +867,8 @@ function startTimer(){
     if(!session)return;
     const e=Math.floor((Date.now()-new Date(session.startTime).getTime())/1000);
     const h=Math.floor(e/3600),m=Math.floor((e%3600)/60),s=e%60;
-    document.getElementById('elapsed').textContent=h>0?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    const el=document.getElementById('elapsed');
+    if(el)el.textContent=h>0?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
   },1000);
 }
 
@@ -224,15 +876,25 @@ function startAutoCheck(){
   if(autoCheckInterval)clearInterval(autoCheckInterval);
   autoCheckInterval=setInterval(()=>{
     if(!session||session.phase!=='drinking')return;
-    const last=session.drinkLog.length?new Date(session.drinkLog[session.drinkLog.length-1].time).getTime():new Date(session.startTime).getTime();
-    if(Date.now()-last>=AUTO_TIMEOUT){
+    const la=session.drinkLog.length?new Date(session.drinkLog[session.drinkLog.length-1].time).getTime():new Date(session.startTime).getTime();
+    if(Date.now()-la>=AUTO_TIMEOUT){
       clearInterval(timerInterval);clearInterval(autoCheckInterval);
-      session.phase='hangover';session.endTime=new Date(last+AUTO_TIMEOUT).toISOString();session.autoEnded=true;
-      saveSession(session);
-      document.getElementById('auto-end-banner').style.display='block';
-      goToHangoverStep();
+      session.phase='hangover';session.endTime=new Date(la+AUTO_TIMEOUT).toISOString();session.autoEnded=true;
+      saveSession(session);document.getElementById('auto-end-banner').style.display='block';goToHangoverStep();
     }
   },60000);
+}
+
+function toggleExtra(key){
+  if(!session)return;
+  if(!session.extras)session.extras={};
+  session.extras[key]=!session.extras[key];saveSession(session);renderExtraChecks();
+}
+
+function renderExtraChecks(){
+  if(!session)return;
+  const ex=session.extras||{};
+  ['food','water','snack'].forEach(k=>{const el=document.getElementById('pill-'+k);if(el)el.classList.toggle('on',!!ex[k]);});
 }
 
 function addDrink(name){
@@ -241,170 +903,1216 @@ function addDrink(name){
   if(!session.drinks.includes(name))session.drinks.push(name);
   saveSession(session);renderDrinkLog();
   document.querySelectorAll('.d-btn').forEach(b=>{
-    if(b.textContent===name){b.classList.add('flash');setTimeout(()=>b.classList.remove('flash'),350);}
+    const bname=b.textContent.replace(/[🍺🥃🍶🍷🥤🍵🍹🫙🔥💧\s]/g,'');
+    if(bname===name){b.classList.add('flash');setTimeout(()=>b.classList.remove('flash'),350);}
   });
-}
-
-function removeDrink(name){
-  if(!session)return;
-  const idx=session.drinkLog.map(d=>d.name).lastIndexOf(name);
-  if(idx===-1)return;
-  session.drinkLog.splice(idx,1);
-  if(!session.drinkLog.find(d=>d.name===name)){
-    session.drinks=session.drinks.filter(d=>d!==name);
-  }
-  saveSession(session);renderDrinkLog();
-}
-
-function renderDrinkLog(){
-  const counts={};(session?.drinkLog||[]).forEach(d=>{counts[d.name]=(counts[d.name]||0)+1;});
-  const el=document.getElementById('drink-log');
-  const total=Object.values(counts).reduce((a,b)=>a+b,0);
-  document.getElementById('total-cups').textContent=total+'杯';
-  if(!Object.keys(counts).length){
-    el.innerHTML='<div class="muted" style="text-align:center;padding:1rem">まだ記録がありません</div>';return;
-  }
-  el.innerHTML=Object.entries(counts).map(([name,cnt])=>`
-    <div class="log-row">
-      <span style="font-size:14px">${name}</span>
-      <div style="display:flex;align-items:center;gap:8px">
-        <button class="del-btn" onclick="removeDrink('${name}')" aria-label="${name}を1杯削除">−</button>
-        <span class="count-badge">${cnt}杯</span>
-        <button class="del-btn" onclick="addDrink('${name}')" aria-label="${name}を1杯追加">＋</button>
-      </div>
-    </div>`).join('');
 }
 
 function addCustomDrink(){
   const inp=document.getElementById('custom-drink');
-  const v=inp.value.trim();if(!v)return;
-  addDrink(v);inp.value='';
+  const v=inp.value.trim();if(!v)return;addDrink(v);inp.value='';
+}
+
+function removeDrink(name){
+  if(!session)return;
+  // 該当のお酒の最後の記録を1件削除（後ろから探す）
+  for(let i=session.drinkLog.length-1;i>=0;i--){
+    if(session.drinkLog[i].name===name){
+      session.drinkLog.splice(i,1);
+      break;
+    }
+  }
+  // drinks配列もチェック（もう残ってなければ削除）
+  const stillHas=session.drinkLog.some(d=>d.name===name);
+  if(!stillHas){
+    session.drinks=session.drinks.filter(n=>n!==name);
+  }
+  saveSession(session);
+  renderDrinkLog();
+}
+
+function renderDrinkLog(){
+  if(!session)return;
+  const counts={};(session.drinkLog||[]).forEach(d=>{counts[d.name]=(counts[d.name]||0)+1;});
+  const alcoCount=Object.entries(counts).filter(([n])=>!SOFT_DRINKS.has(n)).reduce((s,[,c])=>s+c,0);
+  const softCount=counts['ソフトドリンク']||0;
+  const total=Object.values(counts).reduce((a,b)=>a+b,0);
+  const alco=calcAlco(session.drinkLog||[]);
+
+  document.getElementById('total-cups').textContent=total+'杯';
+
+  // ホラーレベル適用
+  applyHorrorLevel(alcoCount);
+
+  // アルコールメーター
+  const mw=document.getElementById('alco-meter-wrap');
+  if(alco>0){
+    mw.style.display='block';
+    const pct=Math.min(100,Math.round(alco/80*100));
+    document.getElementById('meter-bar').style.width=pct+'%';
+    document.getElementById('meter-bar').style.background=alco>=60?'#ff0000':alco>=40?'#ff6600':'#06d6a0';
+    document.getElementById('alco-label').textContent=`純アルコール 約${alco}g`;
+    document.getElementById('alco-status').textContent=alco>=60?'🚨 かなり危険':alco>=40?'⚠️ 飲みすぎ注意':'✅ まだ大丈夫';
+  } else {mw.style.display='none';}
+
+  // アルコール警告
+  const warnEl=document.getElementById('drinking-warning');
+  if(alco>=60){
+    warnEl.style.display='block';
+    warnEl.style.cssText=`display:block;background:${alcoCount>=10?'#000':'#2d0000'};border:2px solid #800;border-radius:12px;padding:10px 14px;margin-bottom:10px;font-size:13px;font-weight:700;color:#ff4444`;
+    warnEl.textContent=alcoCount>=10?'☠️ ｷﾐﾊﾓｳ ｵｼﾏｲﾀﾞ':alcoCount>=7?'💀 もう限界だ。今すぐ帰れ。':'🚨 アルコール量がかなり多い。水を飲んで。';
+    maybeShowPhotoOverlay(alco);
+  } else if(alco>=40){
+    warnEl.style.display='block';
+    warnEl.style.cssText=`display:block;background:#fff0ef;border:2px solid #ff6b6b;border-radius:12px;padding:10px 14px;margin-bottom:10px;font-size:13px;font-weight:700;color:#a32d2d`;
+    warnEl.textContent=alcoCount>=7?'😱 ソフトドリンクに切り替えてください！':'⚠️ そろそろペースを落としましょう。';
+    maybeShowPhotoOverlay(alco);
+  } else {warnEl.style.display='none';}
+
+  // ソフトドリンクアラート
+  const saEl=document.getElementById('soft-alert');
+  const saMsg=document.getElementById('soft-alert-msg');
+  if(alcoCount>=2){
+    const idealRatio=calcIdealSoftRatio();
+    const userRatio=loadSoftRatio(); // ユーザー設定（デフォルト3杯に1回）
+    // データが十分ある場合は分析値、なければユーザー設定値を使う
+    const ratioToUse=idealRatio!==null?idealRatio:1/userRatio;
+    const deficit=Math.ceil(alcoCount*ratioToUse)-softCount;
+    if(deficit>0){
+      const perAlco=idealRatio!==null?Math.round(1/idealRatio*10)/10:userRatio;
+      saEl.style.display='flex';
+      saMsg.textContent=alcoCount>=7?`💧 ソフトドリンクをあと${deficit}杯！たのむ！`:`💧 お酒${perAlco}杯に1杯ペース — あと${deficit}杯不足`;
+    } else {saEl.style.display='none';}
+  } else {saEl.style.display='none';}
+
+  const logEl=document.getElementById('drink-log');
+  if(!Object.keys(counts).length){logEl.innerHTML='<div class="muted" style="text-align:center;padding:1rem">まだ記録がありません</div>';return;}
+  logEl.innerHTML=Object.entries(counts).map(([name,cnt])=>{
+    const isSoft=SOFT_DRINKS.has(name);
+    const safeName=name.replace(/'/g,"\\'");
+    return `<div class="log-row">
+      <span style="font-size:14px;font-weight:500;flex:1">${name}</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button onclick="removeDrink('${safeName}')" class="drink-minus-btn" title="1杯減らす">−</button>
+        <span class="count-badge" style="${isSoft?'background:#e0fff5!important;color:#085041!important':''}">${cnt}杯</span>
+        <button onclick="addDrink('${safeName}')" class="drink-plus-btn" title="1杯追加">＋</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // キャラクター表示
+  const charEl=document.getElementById('drinking-characters');
+  const charNames=Object.keys(counts).filter(n=>DRINK_CHARS[n]);
+  if(charNames.length){
+    charEl.style.display='flex';
+    charEl.innerHTML=charNames.map(n=>{
+      const c=DRINK_CHARS[n];
+      return `<div class="char-item"><span class="char-display" title="${c.name}">${c.emoji}</span><span>×${counts[n]}</span></div>`;
+    }).join('');
+  } else {charEl.style.display='none';}
 }
 
 function goToHangoverStep(){
   if(!session||!session.drinkLog.length){alert('お酒を記録してください');return;}
   if(session.phase==='drinking'){
     clearInterval(timerInterval);clearInterval(autoCheckInterval);
-    session.phase='hangover';session.endTime=new Date().toISOString();
-    saveSession(session);
+    session.phase='hangover';session.endTime=new Date().toISOString();saveSession(session);
   }
-  openReviewFromHome();showScreen('s-review');
+  document.body.className='';openReviewFromHome();showScreen('s-review');
 }
+
+let pendingMemory=-1;
+let pendingRegrets=[];
 
 function setHangover(level){
   pendingHangover=level;
   document.getElementById('step-hangover').style.display='none';
   document.getElementById('step-memory').style.display='block';
-  document.getElementById('review-step-lbl').textContent='ステップ 2 / 2';
+  document.getElementById('review-step-label').textContent='ステップ 2 / 3';
 }
 
-function setMemory(level){finalizeRecord(pendingHangover,level);}
+function setMemory(level){
+  pendingMemory=level;
+  document.getElementById('step-memory').style.display='none';
+  document.getElementById('step-regret').style.display='block';
+  document.getElementById('review-step-label').textContent='ステップ 3 / 3';
+  renderRegretOptions();
+}
 
-function finalizeRecord(hangover,memory){
+function renderRegretOptions(){
+  const el=document.getElementById('regret-options');
+  el.innerHTML=REGRETS.map(r=>`<label class="check-pill" id="regret-${r.id}" onclick="toggleRegret('${r.id}')"><span>${r.icon} ${r.label}</span></label>`).join('');
+}
+
+function toggleRegret(id){
+  const idx=pendingRegrets.indexOf(id);
+  if(idx>=0)pendingRegrets.splice(idx,1);
+  else pendingRegrets.push(id);
+  const el=document.getElementById('regret-'+id);
+  if(el)el.classList.toggle('on',pendingRegrets.includes(id));
+}
+
+function saveRegrets(){
+  finalizeWithRegrets(pendingRegrets);
+}
+
+function finalizeWithRegrets(regrets){
+  finalizeRecord(pendingHangover,pendingMemory,regrets);
+}
+
+function finalizeRecord(hangover,memory,regrets){
   const counts={};(session.drinkLog||[]).forEach(d=>{counts[d.name]=(counts[d.name]||0)+1;});
-  const rec={id:Date.now(),date:session.date,startTime:session.startTime,endTime:session.endTime,autoEnded:session.autoEnded||false,drinkCounts:counts,hangover,memory};
-  const records=load();records.unshift(rec);save(records);
+  const alco=calcAlco(session.drinkLog||[]);
+  const rec={id:Date.now(),date:session.date,startTime:session.startTime,endTime:session.endTime,autoEnded:session.autoEnded||false,drinkCounts:counts,alco,extras:session.extras||{},hangover,memory,regrets:regrets||[],scene:session.scene||null};
+  const level=loadLevel();
+  const prevRecords=getCurrentLevelRecords();
+  const prevUnlocked=new Set(ACHIEVEMENTS.filter(a=>a.check(prevRecords,level)).map(a=>a.id));
+  const allRecords=[rec,...load()];save(allRecords);
+  const newCurrentRecords=getCurrentLevelRecords();
+  const newUnlocked=ACHIEVEMENTS.filter(a=>a.check(newCurrentRecords,level)&&!prevUnlocked.has(a.id));
+  const allUnlocked=ACHIEVEMENTS.every(a=>a.check(newCurrentRecords,level));
   session=null;saveSession(null);
+  if(newUnlocked.length){
+    setTimeout(()=>{
+      alert('🏆 新しい称号を獲得！\n\n'+newUnlocked.map(a=>`${a.icon} ${a.name}\n${a.desc}`).join('\n\n'));
+      if(allUnlocked){
+        setTimeout(()=>{
+          if(confirm('🎉 全てのバッジを獲得しました！\nレベルアップしますか？\n\n(バッジがリセットされ、次のレベルの挑戦が始まります)')){
+            levelUp();
+          }
+        },500);
+      }
+    },100);
+  }
   showScreen('s-home');homeTab('history');
 }
 
 function skipReview(){showScreen('s-home');showPendingNotice();}
 
+// 写真オーバーレイを表示するかどうか判定
+function maybeShowPhotoOverlay(alco){
+  const photos=loadPhotos();
+  if(!photos.length)return;
+  const lastShown=loadPhotoLastShown();
+  const cooldown=10*60*1000; // 10分
+  if(Date.now()-lastShown<cooldown)return;
+  // ランダム選択
+  const photo=photos[Math.floor(Math.random()*photos.length)];
+  showPhotoOverlay(photo,alco);
+  savePhotoLastShown(Date.now());
+}
+
+function showPhotoOverlay(photo,alco){
+  // 既存のオーバーレイがあれば削除
+  const existing=document.querySelector('.photo-overlay');
+  if(existing)existing.remove();
+
+  const messages=[
+    {main:'この人が待ってます',sub:'今日はもう帰ろう？\n水を飲んで、早めに切り上げて。'},
+    {main:'大切な人のことを\n思い出して',sub:'飲みすぎると、また明日が辛くなる。\nこの笑顔を守ろう。'},
+    {main:'明日も笑顔で\n会いたいから',sub:'あと1杯だけ、それが毎回続いてる。\n今夜は勇気を持って、ここで止めよう。'},
+    {main:'ちゃんと帰ってきてね',sub:'酔いすぎると\n「いつも通り」が遠くなる。\n水を飲んで、家を目指そう。'},
+    {main:'この顔のために\nあと一歩',sub:'ソフトドリンクに切り替える、\n水を飲む、それだけで未来が変わる。'}
+  ];
+  const msg=photo.message?{main:photo.message,sub:'飲みすぎると、また明日が辛くなる。\n今夜はここで切り上げよう。'}:messages[Math.floor(Math.random()*messages.length)];
+
+  const overlay=document.createElement('div');
+  overlay.className='photo-overlay';
+  overlay.innerHTML=`
+    <img src="${photo.data}" alt="">
+    <div class="photo-overlay-msg">${msg.main.replace(/\n/g,'<br>')}</div>
+    <div class="photo-overlay-sub">${msg.sub.replace(/\n/g,'<br>')}</div>
+    <div class="photo-overlay-btns">
+      <button class="photo-overlay-btn" onclick="this.closest('.photo-overlay').remove();addDrink('ソフトドリンク');">💧 ソフトドリンクを飲む</button>
+      <button class="photo-overlay-btn secondary" onclick="this.closest('.photo-overlay').remove();">閉じる</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
 function cancelSession(){
   if(!confirm('記録をキャンセルしますか？'))return;
   clearInterval(timerInterval);clearInterval(autoCheckInterval);
-  session=null;saveSession(null);showScreen('s-home');
+  document.body.className='';session=null;saveSession(null);showScreen('s-home');
 }
 
 function renderHistory(){
   const records=load();
   const el=document.getElementById('history-list');
-  if(!records.length){el.innerHTML='<div class="empty">まだ記録がありません</div>';return;}
-  const HLABELS=['問題なし','少しだるい','頭が痛い','最悪'];
-  const MLABELS=['全部覚えてる','ところどころ','かなり曖昧','ほぼ覚えてない'];
-  el.innerHTML=records.map(r=>{
+  if(!records.length){el.innerHTML='<div class="empty">まだ記録がありません 📭</div>';return;}
+  const HLABELS=['😊 問題なし','😪 少しだるい','🤕 頭が痛い','💀 最悪'];
+  const MLABELS=['✅ 全部覚えてる','🤔 ところどころ','😵 かなり曖昧','⬛ ほぼ覚えてない'];
+  let html=`<div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button class="export-btn" onclick="exportData()">📥 エクスポート</button></div>`;
+  html+=records.map(r=>{
     const drinks=Object.entries(r.drinkCounts).map(([n,c])=>`${n}${c}杯`).join('・');
-    const hcls=r.hangover>=2?'b-ng':'b-ok';
-    const mcls=r.memory>=2?'b-warn':'b-ok';
+    const hcls=r.hangover>=2?'b-ng':'b-ok';const mcls=r.memory>=2?'b-warn':'b-ok';
     const auto=r.autoEnded?'<span class="badge" style="background:#f0f0f0;color:#888;margin-left:4px">自動終了</span>':'';
-    return `<div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div>
-          <span style="font-size:13px;color:#888">${r.date}</span>${auto}
-          <div style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap">
-            <span class="badge ${hcls}">${HLABELS[r.hangover]}</span>
-            <span class="badge ${mcls}">${MLABELS[r.memory]}</span>
-          </div>
+    const past=r.isPastRecord?'<span class="badge" style="background:#f3eeff;color:#7c4dff;margin-left:4px">遡り記録</span>':'';
+    const quick=r.isQuickRecord?'<span class="badge" style="background:#e6f1fb;color:#0c447c;margin-left:4px">⚡ザックリ</span>':'';
+    const alcoStr=r.alco?`<span class="badge" style="background:#f0f0f0;color:#555;margin-left:4px">🧪${r.alco}g</span>`:'';
+    const extras=[];if(r.extras?.food)extras.push('🍱');if(r.extras?.water)extras.push('💧');if(r.extras?.snack)extras.push('🥜');
+    // シーンバッジ
+    const sceneObj=r.scene?SCENES.find(s=>s.id===r.scene):null;
+    const sceneStr=sceneObj?`<span class="badge" style="background:#fff8e1;color:#7a5a00;margin-left:4px">${sceneObj.icon} ${sceneObj.label}</span>`:'';
+    // 後悔バッジ
+    const regretsStr=(r.regrets&&r.regrets.length)?`<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">${r.regrets.map(id=>{const rg=REGRETS.find(x=>x.id===id);return rg?`<span class="badge" style="background:#fff0ef;color:#a32d2d;font-size:10px">${rg.icon} ${rg.label}</span>`:'';}).join('')}</div>`:'';
+    return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div style="flex:1"><span class="muted">${r.date}</span>${auto}${past}${quick}${sceneStr}
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <span class="badge ${hcls}">${HLABELS[r.hangover]}</span>
+          <span class="badge ${mcls}">${MLABELS[r.memory]}</span>${alcoStr}${extras.length?`<span style="font-size:14px">${extras.join('')}</span>`:''}
         </div>
-        <button class="del-btn" onclick="deleteRecord(${r.id})" aria-label="記録を削除">🗑</button>
+        ${regretsStr}
       </div>
-      <div style="font-size:13px;color:#888;margin-top:6px">${drinks}</div>
-    </div>`;
+      <div style="display:flex;flex-direction:column;gap:4px;margin-left:8px">
+        <button class="del-btn" onclick="editRecord(${r.id})" style="color:#888;font-size:14px" title="編集">✏️</button>
+        <button class="del-btn" onclick="deleteRecord(${r.id})" title="削除">🗑</button>
+      </div>
+    </div><div class="muted" style="margin-top:8px;font-size:12px">${drinks}</div></div>`;
   }).join('');
-}
-
-function deleteRecord(id){
-  if(!confirm('削除しますか？'))return;
-  save(load().filter(r=>r.id!==id));renderHistory();
-}
-
-function renderAnalysis(){
-  const records=load();
-  const el=document.getElementById('analysis-content');
-  if(!records.length){el.innerHTML='<div class="empty">記録が増えると分析できます</div>';return;}
-  const total=records.length;
-  const badH=records.filter(r=>r.hangover>=2).length;
-  const badM=records.filter(r=>r.memory>=2).length;
-  const rateH=Math.round(badH/total*100);
-  const rateM=Math.round(badM/total*100);
-  const drinkMap={};
-  records.forEach(r=>{
-    Object.entries(r.drinkCounts).forEach(([name])=>{
-      if(!drinkMap[name])drinkMap[name]={total:0,hangover:0,memory:0};
-      drinkMap[name].total++;
-      if(r.hangover>=2)drinkMap[name].hangover++;
-      if(r.memory>=2)drinkMap[name].memory++;
-    });
-  });
-  const sortedH=Object.entries(drinkMap).filter(([,v])=>v.total>=2).sort(([,a],[,b])=>(b.hangover/b.total)-(a.hangover/a.total));
-  const sortedM=Object.entries(drinkMap).filter(([,v])=>v.total>=2).sort(([,a],[,b])=>(b.memory/b.total)-(a.memory/a.total));
-  const topRisky=sortedH.find(([,v])=>v.hangover/v.total>=0.5);
-  const topMemory=sortedM.find(([,v])=>v.memory/v.total>=0.5);
-  let html=`<div class="stat-grid">
-    <div class="stat-card"><div class="lbl">記録数</div><div class="stat-val">${total}</div></div>
-    <div class="stat-card"><div class="lbl">二日酔い率</div><div class="stat-val">${rateH}%</div></div>
-    <div class="stat-card"><div class="lbl">記憶なくす率</div><div class="stat-val">${rateM}%</div></div>
-  </div>`;
-  if(sortedH.length){
-    html+=`<div class="sec-title">二日酔いになりやすいお酒</div>`;
-    sortedH.forEach(([name,v])=>{
-      const pct=Math.round(v.hangover/v.total*100);
-      html+=barHtml(name,pct,pct>=50?'#E24B4A':'#1D9E75');
-    });
-  }
-  if(sortedM.length){
-    html+=`<div class="sec-title" style="margin-top:1.5rem">記憶をなくしやすいお酒</div>`;
-    sortedM.forEach(([name,v])=>{
-      const pct=Math.round(v.memory/v.total*100);
-      html+=barHtml(name,pct,pct>=50?'#BA7517':'#1D9E75');
-    });
-  }
-  const ins=[];
-  if(topRisky)ins.push(`<b>${topRisky[0]}</b> を飲んだ日は二日酔いになりやすい傾向があります。`);
-  if(topMemory&&(!topRisky||topMemory[0]!==topRisky[0]))ins.push(`<b>${topMemory[0]}</b> を飲むと記憶をなくしやすい傾向があります。`);
-  if(topRisky&&topMemory&&topRisky[0]===topMemory[0]){ins.length=0;ins.push(`<b>${topRisky[0]}</b> は二日酔い・記憶喪失ともにリスクが高いです。要注意！`);}
-  if(ins.length){
-    html+=`<div style="background:#f5f5f5;border-radius:8px;padding:1rem 1.25rem;margin-top:1rem">${ins.map(i=>`<p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:6px">${i}</p>`).join('')}</div>`;
-  }
   el.innerHTML=html;
 }
 
-function barHtml(name,pct,color){
-  return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px">
-    <div style="width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
-    <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
-    <div style="width:36px;text-align:right;color:#888">${pct}%</div>
+// 過去記録フォーム用状態
+let pastDrinkCounts={};
+let pastHangover=-1;
+let pastMemory=-1;
+let pastRegrets=[];
+let pastScene=null;
+let editingRecordId=null; // 編集中のレコードID（nullなら新規作成）
+
+function togglePastForm(){
+  const form=document.getElementById('past-form');
+  const isOpen=form.style.display!=='none';
+  form.style.display=isOpen?'none':'block';
+  const btn=document.getElementById('past-form-toggle-btn');
+  btn.textContent=isOpen?'📝 過去の記録を追加する':'✕ 閉じる';
+  if(!isOpen){
+    // フォームリセット（新規作成モード）
+    editingRecordId=null;
+    pastDrinkCounts={};pastHangover=-1;pastMemory=-1;pastRegrets=[];pastScene=null;
+    const today=new Date().toISOString().split('T')[0];
+    document.getElementById('past-date').value=today;
+    document.getElementById('past-drink-counts').textContent='';
+    document.querySelectorAll('#past-form .d-btn').forEach(b=>b.style.opacity='1');
+    for(let i=0;i<4;i++){
+      const hb=document.getElementById('past-h'+i);const mb=document.getElementById('past-m'+i);
+      if(hb)hb.style.outline='none';if(mb)mb.style.outline='none';
+    }
+    // フォームのタイトル・ボタン更新
+    updatePastFormHeader();
+    renderPastSceneOptions();
+    renderPastRegretOptions();
+  }
+}
+
+function updatePastFormHeader(){
+  const title=document.getElementById('past-form-title');
+  const saveBtn=document.getElementById('past-save-btn');
+  if(title)title.textContent=editingRecordId?'記録を編集':'過去の飲み会を記録';
+  if(saveBtn)saveBtn.textContent=editingRecordId?'更新する':'保存する';
+}
+
+function renderPastSceneOptions(){
+  const el=document.getElementById('past-scene-options');
+  if(!el)return;
+  el.innerHTML='<button class="check-pill" id="past-scene-none" onclick="selectPastScene(null)">なし</button>'+
+    SCENES.map(s=>`<button class="check-pill" id="past-scene-${s.id}" onclick="selectPastScene('${s.id}')">${s.icon} ${s.label}</button>`).join('');
+  // 選択状態反映
+  highlightPastScene();
+}
+
+function highlightPastScene(){
+  const noneEl=document.getElementById('past-scene-none');
+  if(noneEl)noneEl.classList.toggle('on',pastScene===null);
+  SCENES.forEach(s=>{
+    const el=document.getElementById('past-scene-'+s.id);
+    if(el)el.classList.toggle('on',pastScene===s.id);
+  });
+}
+
+function selectPastScene(id){
+  pastScene=id;
+  highlightPastScene();
+}
+
+function renderPastRegretOptions(){
+  const el=document.getElementById('past-regret-options');
+  if(!el)return;
+  el.innerHTML=REGRETS.map(r=>`<label class="check-pill" id="past-regret-${r.id}" onclick="togglePastRegret('${r.id}')"><span>${r.icon} ${r.label}</span></label>`).join('');
+  // 選択状態反映
+  REGRETS.forEach(r=>{
+    const el=document.getElementById('past-regret-'+r.id);
+    if(el)el.classList.toggle('on',pastRegrets.includes(r.id));
+  });
+}
+
+function togglePastRegret(id){
+  const idx=pastRegrets.indexOf(id);
+  if(idx>=0)pastRegrets.splice(idx,1);
+  else pastRegrets.push(id);
+  const el=document.getElementById('past-regret-'+id);
+  if(el)el.classList.toggle('on',pastRegrets.includes(id));
+}
+
+// 履歴から編集モードで開く
+function editRecord(id){
+  const records=load();
+  const rec=records.find(r=>r.id===id);
+  if(!rec){alert('記録が見つかりません');return;}
+  // フォームを開く
+  editingRecordId=id;
+  pastDrinkCounts={...(rec.drinkCounts||{})};
+  pastHangover=rec.hangover;
+  pastMemory=rec.memory;
+  pastRegrets=[...(rec.regrets||[])];
+  pastScene=rec.scene||null;
+  // フォーム表示
+  const form=document.getElementById('past-form');
+  form.style.display='block';
+  const btn=document.getElementById('past-form-toggle-btn');
+  if(btn)btn.textContent='✕ 閉じる';
+  // 日付セット
+  const d=new Date(rec.startTime);
+  const dateStr=d.toISOString().split('T')[0];
+  document.getElementById('past-date').value=dateStr;
+  // ドリンク表示更新
+  const counts=Object.entries(pastDrinkCounts);
+  document.getElementById('past-drink-counts').innerHTML=counts.length
+    ?counts.map(([n,c])=>`<span class="badge" style="margin-right:4px;${SOFT_DRINKS.has(n)?'background:#e0fff5;color:#085041':'background:#f5f5f5;color:#555'}">${n} ${c}杯</span>`).join('')
+    :'お酒をタップして杯数を選択（複数回タップで杯数増加）';
+  // 翌朝・記憶の選択状態
+  for(let i=0;i<4;i++){
+    const hb=document.getElementById('past-h'+i);const mb=document.getElementById('past-m'+i);
+    if(hb)hb.style.outline=i===pastHangover?'3px solid #06d6a0':'none';
+    if(mb)mb.style.outline=i===pastMemory?'3px solid #06d6a0':'none';
+  }
+  // ヘッダー・ボタン更新
+  updatePastFormHeader();
+  renderPastSceneOptions();
+  renderPastRegretOptions();
+  // フォームまでスクロール
+  setTimeout(()=>{form.scrollIntoView({behavior:'smooth',block:'start'});},100);
+}
+
+function togglePastDrink(name,btn){
+  if(!pastDrinkCounts[name])pastDrinkCounts[name]=0;
+  pastDrinkCounts[name]++;
+  if(pastDrinkCounts[name]>5)pastDrinkCounts[name]=0;
+  if(pastDrinkCounts[name]===0){delete pastDrinkCounts[name];btn.style.opacity='1';}
+  else btn.style.opacity=1;
+  // バッジ表示
+  const isSoft=SOFT_DRINKS.has(name);
+  const counts=Object.entries(pastDrinkCounts);
+  document.getElementById('past-drink-counts').innerHTML=counts.length
+    ?counts.map(([n,c])=>`<span class="badge" style="margin-right:4px;${SOFT_DRINKS.has(n)?'background:#e0fff5;color:#085041':'background:#f5f5f5;color:#555'}">${n} ${c}杯</span>`).join('')
+    :'お酒をタップして杯数を選択（複数回タップで杯数増加）';
+}
+
+function selectPastHangover(level){
+  pastHangover=level;
+  for(let i=0;i<4;i++){const b=document.getElementById('past-h'+i);if(b)b.style.outline=i===level?'3px solid #06d6a0':'none';}
+}
+
+function selectPastMemory(level){
+  pastMemory=level;
+  for(let i=0;i<4;i++){const b=document.getElementById('past-m'+i);if(b)b.style.outline=i===level?'3px solid #06d6a0':'none';}
+}
+
+function savePastRecord(){
+  const dateVal=document.getElementById('past-date').value;
+  if(!dateVal){alert('日付を選択してください');return;}
+  if(!Object.keys(pastDrinkCounts).length){alert('お酒を1つ以上選択してください');return;}
+  if(pastHangover<0){alert('翌朝の体の状態を選択してください');return;}
+  if(pastMemory<0){alert('記憶の状態を選択してください');return;}
+  const d=new Date(dateVal);
+  const dateStr=d.toLocaleDateString('ja-JP');
+  const alco=Object.entries(pastDrinkCounts).reduce((sum,[name,cnt])=>{
+    if(SOFT_DRINKS.has(name))return sum;
+    return sum+(ALCO_MAP[name]||DEFAULT_ALCO)*cnt;
+  },0);
+  const records=load();
+  if(editingRecordId){
+    // 編集モード: 既存のレコードを更新
+    const idx=records.findIndex(r=>r.id===editingRecordId);
+    if(idx<0){alert('記録が見つかりません');return;}
+    const original=records[idx];
+    // 元の時刻を維持しつつ日付だけ変更
+    const origStart=new Date(original.startTime);
+    const origEnd=original.endTime?new Date(original.endTime):null;
+    const newStart=new Date(dateVal+'T'+origStart.toTimeString().slice(0,8));
+    let newEnd=origEnd;
+    if(origEnd){
+      const dayDiff=(origEnd-origStart);
+      newEnd=new Date(newStart.getTime()+dayDiff);
+    }
+    records[idx]={
+      ...original,
+      date:dateStr,
+      startTime:newStart.toISOString(),
+      endTime:newEnd?newEnd.toISOString():null,
+      drinkCounts:{...pastDrinkCounts},
+      alco,
+      hangover:pastHangover,
+      memory:pastMemory,
+      regrets:[...pastRegrets],
+      scene:pastScene
+    };
+  } else {
+    // 新規作成
+    const rec={
+      id:Date.now(),date:dateStr,
+      startTime:new Date(dateVal+'T20:00:00').toISOString(),
+      endTime:new Date(dateVal+'T23:00:00').toISOString(),
+      autoEnded:false,drinkCounts:{...pastDrinkCounts},alco,
+      extras:{food:false,water:false,snack:false},
+      hangover:pastHangover,memory:pastMemory,
+      regrets:[...pastRegrets],
+      scene:pastScene,
+      isPastRecord:true
+    };
+    records.push(rec);
+  }
+  records.sort((a,b)=>new Date(b.startTime)-new Date(a.startTime));
+  save(records);
+  editingRecordId=null;
+  togglePastForm();
+  renderHistory();
+}
+
+// ザックリ記録モード
+let quickData={when:'today',amount:null,hangover:-1,memory:-1,customDate:null,regrets:[]};
+
+function openQuickRecord(){
+  quickData={when:'today',amount:null,hangover:-1,memory:-1,customDate:null,regrets:[]};
+  showScreen('s-quick');
+  document.getElementById('q-custom-date').style.display='none';
+  document.getElementById('q-custom-date').value=new Date().toISOString().split('T')[0];
+  highlightQuickWhen('today');
+  ['q-amt-light','q-amt-normal','q-amt-heavy','q-h-ok','q-h-tired','q-h-pain','q-h-worst','q-m-all','q-m-part','q-m-vague','q-m-none'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.outline='none';
+  });
+  // 後悔オプションを描画
+  const qrEl=document.getElementById('q-regret-options');
+  if(qrEl)qrEl.innerHTML=REGRETS.map(r=>`<label class="check-pill" id="q-regret-${r.id}" onclick="toggleQuickRegret('${r.id}')"><span>${r.icon} ${r.label}</span></label>`).join('');
+}
+
+function toggleQuickRegret(id){
+  const idx=quickData.regrets.indexOf(id);
+  if(idx>=0)quickData.regrets.splice(idx,1);
+  else quickData.regrets.push(id);
+  const el=document.getElementById('q-regret-'+id);
+  if(el)el.classList.toggle('on',quickData.regrets.includes(id));
+}
+
+function highlightQuickWhen(key){
+  ['today','yesterday'].forEach(k=>{
+    const el=document.getElementById('q-when-'+k);
+    if(el)el.style.outline=k===key?'3px solid #06d6a0':'none';
+  });
+}
+
+function setQuickWhen(when){
+  quickData.when=when;
+  quickData.customDate=null;
+  highlightQuickWhen(when);
+  document.getElementById('q-custom-date').style.display='none';
+}
+
+function toggleQuickCustomDate(){
+  const el=document.getElementById('q-custom-date');
+  const isOpen=el.style.display!=='none';
+  el.style.display=isOpen?'none':'block';
+  if(!isOpen){
+    quickData.when='custom';
+    highlightQuickWhen('');
+  }
+}
+
+function setQuickAmount(amt){
+  quickData.amount=amt;
+  ['light','normal','heavy'].forEach(k=>{
+    const el=document.getElementById('q-amt-'+k);
+    if(el)el.style.outline=k===amt?'3px solid #06d6a0':'none';
+  });
+}
+
+function setQuickHangover(lv){
+  quickData.hangover=lv;
+  const keys=['ok','tired','pain','worst'];
+  keys.forEach((k,i)=>{
+    const el=document.getElementById('q-h-'+k);
+    if(el)el.style.outline=i===lv?'3px solid #06d6a0':'none';
+  });
+}
+
+function setQuickMemory(lv){
+  quickData.memory=lv;
+  const keys=['all','part','vague','none'];
+  keys.forEach((k,i)=>{
+    const el=document.getElementById('q-m-'+k);
+    if(el)el.style.outline=i===lv?'3px solid #06d6a0':'none';
+  });
+}
+
+function saveQuickRecord(){
+  if(!quickData.amount){alert('飲んだ量を選択してください');return;}
+  if(quickData.hangover<0){alert('翌朝の状態を選択してください');return;}
+  if(quickData.memory<0){alert('記憶の状態を選択してください');return;}
+  let targetDate;
+  if(quickData.when==='today')targetDate=new Date();
+  else if(quickData.when==='yesterday'){targetDate=new Date();targetDate.setDate(targetDate.getDate()-1);}
+  else {
+    const v=document.getElementById('q-custom-date').value;
+    if(!v){alert('日付を選択してください');return;}
+    targetDate=new Date(v);
+  }
+  const amountMap={light:{cups:2,alco:30,drink:'ビール'},normal:{cups:5,alco:70,drink:'ビール'},heavy:{cups:8,alco:120,drink:'ビール'}};
+  const am=amountMap[quickData.amount];
+  const rec={
+    id:Date.now(),
+    date:targetDate.toLocaleDateString('ja-JP'),
+    startTime:new Date(targetDate.getTime()-3*60*60*1000).toISOString(),
+    endTime:targetDate.toISOString(),
+    autoEnded:false,
+    drinkCounts:{[am.drink]:am.cups},
+    alco:am.alco,
+    extras:{food:false,water:false,snack:false},
+    hangover:quickData.hangover,
+    memory:quickData.memory,
+    regrets:quickData.regrets||[],
+    scene:null,
+    isQuickRecord:true,
+    isPastRecord:quickData.when!=='today'
+  };
+  const records=load();
+  records.push(rec);
+  records.sort((a,b)=>new Date(b.startTime)-new Date(a.startTime));
+  save(records);
+  showScreen('s-home');homeTab('history');
+}
+
+function exportData(){
+  const blob=new Blob([JSON.stringify(load(),null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='hangover-tracker.json';a.click();URL.revokeObjectURL(url);
+}
+
+function deleteRecord(id){
+  if(!confirm('削除しますか？'))return;save(load().filter(r=>r.id!==id));renderHistory();
+}
+
+function getMonthKey(ds){
+  const d=new Date(ds.replace(/年|月/g,'/').replace('日',''));
+  if(isNaN(d))return '';return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
+function renderAnalysis(){
+  const records=load();const el=document.getElementById('analysis-content');
+  if(!records.length){el.innerHTML='<div class="empty">記録が増えると分析できます 📊</div>';return;}
+  const total=records.length;
+  const badH=records.filter(r=>r.hangover>=2).length;
+  const badM=records.filter(r=>r.memory>=2).length;
+  const avgAlco=records.filter(r=>r.alco).length?Math.round(records.filter(r=>r.alco).reduce((s,r)=>s+r.alco,0)/records.filter(r=>r.alco).length):0;
+  const drinkMap={};
+  records.forEach(r=>{Object.entries(r.drinkCounts).forEach(([name])=>{if(!drinkMap[name])drinkMap[name]={total:0,hangover:0,memory:0};drinkMap[name].total++;if(r.hangover>=2)drinkMap[name].hangover++;if(r.memory>=2)drinkMap[name].memory++;});});
+  const sortedH=Object.entries(drinkMap).filter(([n,v])=>!SOFT_DRINKS.has(n)&&v.total>=2).sort(([,a],[,b])=>(b.hangover/b.total)-(a.hangover/a.total));
+  const sortedM=Object.entries(drinkMap).filter(([n,v])=>!SOFT_DRINKS.has(n)&&v.total>=2).sort(([,a],[,b])=>(b.memory/b.total)-(a.memory/a.total));
+  const monthMap={};records.forEach(r=>{const mk=getMonthKey(r.date);if(mk)monthMap[mk]=(monthMap[mk]||0)+1;});
+  const months=Object.keys(monthMap).sort().slice(-6);
+  const maxMonth=Math.max(...months.map(m=>monthMap[m]),1);
+  const goal=loadGoal();
+  const thisMonth=new Date().toISOString().slice(0,7).replace('-','/');
+  const thisMonthCount=monthMap[thisMonth]||0;
+  const goalPct=goal?Math.min(100,Math.round(thisMonthCount/goal*100)):0;
+  const goalColor=goalPct>=100?'#E24B4A':goalPct>=70?'#EF9F27':'#06d6a0';
+
+  let html=`<div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">記録数</div><div class="stat-val">${total}</div></div>
+    <div class="stat-card"><div class="stat-label">二日酔い率</div><div class="stat-val">${Math.round(badH/total*100)}%</div></div>
+    <div class="stat-card"><div class="stat-label">平均アルコール</div><div class="stat-val">${avgAlco?avgAlco+'g':'—'}</div></div>
   </div>`;
+
+  html+=`<div class="section-title">🎯 今月の目標</div>
+  ${goal?`<div class="goal-row" style="margin-bottom:12px">
+    <span class="muted" style="white-space:nowrap">${thisMonthCount}/${goal}回</span>
+    <div class="goal-bar-wrap"><div class="goal-bar" style="width:${goalPct}%;background:${goalColor}"></div></div>
+    <span class="muted" style="white-space:nowrap">${goalPct}%</span>
+  </div>`:`<div class="muted" style="font-size:12px;margin-bottom:12px">⚙️設定タブから目標を設定できます</div>`}`;
+
+  if(months.length){
+    html+=`<div class="section-title">📅 月別 飲み会回数</div>`;
+    months.forEach(m=>{const cnt=monthMap[m];const pct=Math.round(cnt/maxMonth*100);const label=m.replace(/\d{4}\//,'');
+      html+=`<div class="month-bar-row"><div class="month-label">${label}</div><div class="month-bar-outer"><div class="month-bar-inner" style="width:${pct}%"></div><span class="month-bar-val">${cnt}</span></div></div>`;
+    });
+  }
+
+  // ソフトドリンク比率分析
+  const softRecs=records.filter(r=>Object.entries(r.drinkCounts||{}).filter(([n])=>!SOFT_DRINKS.has(n)).reduce((s,[,c])=>s+c,0)>0);
+  if(softRecs.length>=3){
+    const groups=[
+      {label:'ソフトなし',f:r=>(r.drinkCounts?.['ソフトドリンク']||0)===0},
+      {label:'4杯に1杯未満',f:r=>{const a=Object.entries(r.drinkCounts||{}).filter(([n])=>!SOFT_DRINKS.has(n)).reduce((s,[,c])=>s+c,0);const s=r.drinkCounts?.['ソフトドリンク']||0;const rt=a>0?s/a:0;return rt>0&&rt<0.34;}},
+      {label:'約3杯に1杯',f:r=>{const a=Object.entries(r.drinkCounts||{}).filter(([n])=>!SOFT_DRINKS.has(n)).reduce((s,[,c])=>s+c,0);const s=r.drinkCounts?.['ソフトドリンク']||0;const rt=a>0?s/a:0;return rt>=0.34&&rt<0.6;}},
+      {label:'約2杯に1杯',f:r=>{const a=Object.entries(r.drinkCounts||{}).filter(([n])=>!SOFT_DRINKS.has(n)).reduce((s,[,c])=>s+c,0);const s=r.drinkCounts?.['ソフトドリンク']||0;const rt=a>0?s/a:0;return rt>=0.6;}},
+    ];
+    const gData=groups.map(g=>{const grp=softRecs.filter(g.f);if(!grp.length)return null;return{label:g.label,count:grp.length,hRate:Math.round(grp.filter(r=>r.hangover>=2).length/grp.length*100),mRate:Math.round(grp.filter(r=>r.memory>=2).length/grp.length*100)};}).filter(Boolean);
+    const ir=calcIdealSoftRatio();
+    if(gData.length>=2){
+      html+=`<div class="section-title">💧 ソフトドリンク比率と二日酔いの関係</div>
+      <div style="font-size:12px;color:#085041;background:#e0fff5;border:2px solid #06d6a0;border-radius:10px;padding:8px 12px;margin-bottom:12px">${ir?`お酒 <b>${Math.round(1/ir*10)/10}杯</b> に1杯のソフトドリンクが目安です（あなたのデータより）`:'データが増えると目安が自動計算されます'}</div>
+      ${gData.map(g=>`<div style="margin-bottom:12px"><div class="muted" style="margin-bottom:4px;font-weight:700">${g.label}（${g.count}回）</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:12px"><div style="width:68px;color:var(--text2)">二日酔い</div><div class="bar-wrap"><div class="bar-fill" style="width:${g.hRate}%;background:${g.hRate>=50?'#E24B4A':'#06d6a0'}"></div></div><div style="width:32px;text-align:right" class="muted">${g.hRate}%</div></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:12px"><div style="width:68px;color:var(--text2)">記憶なくす</div><div class="bar-wrap"><div class="bar-fill" style="width:${g.mRate}%;background:${g.mRate>=50?'#BA7517':'#06d6a0'}"></div></div><div style="width:32px;text-align:right" class="muted">${g.mRate}%</div></div>
+      </div>`).join('')}`;
+    }
+  }
+
+  // アルコール量閾値分析
+  const alcoRecs=records.filter(r=>r.alco>0);
+  if(alcoRecs.length>=3){
+    const brackets=[[0,20,'〜20g'],[20,40,'20〜40g'],[40,60,'40〜60g'],[60,999,'60g〜']];
+    const bd=brackets.map(([lo,hi,label])=>{const g=alcoRecs.filter(r=>r.alco>=lo&&r.alco<hi);if(!g.length)return null;return{label,count:g.length,hRate:Math.round(g.filter(r=>r.hangover>=2).length/g.length*100),mRate:Math.round(g.filter(r=>r.memory>=2).length/g.length*100)};}).filter(Boolean);
+    if(bd.length>=2){
+      html+=`<div class="section-title">📊 アルコール量と二日酔いの関係</div>
+      ${bd.map(b=>`<div style="margin-bottom:12px"><div class="muted" style="margin-bottom:4px;font-weight:700">${b.label}（${b.count}回）</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:12px"><div style="width:68px;color:var(--text2)">二日酔い</div><div class="bar-wrap"><div class="bar-fill" style="width:${b.hRate}%;background:${b.hRate>=50?'#E24B4A':'#06d6a0'}"></div></div><div style="width:32px;text-align:right" class="muted">${b.hRate}%</div></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:12px"><div style="width:68px;color:var(--text2)">記憶なくす</div><div class="bar-wrap"><div class="bar-fill" style="width:${b.mRate}%;background:${b.mRate>=50?'#BA7517':'#06d6a0'}"></div></div><div style="width:32px;text-align:right" class="muted">${b.mRate}%</div></div>
+      </div>`).join('')}`;
+    }
+  }
+
+  if(sortedH.length){html+=`<div class="section-title">🍶 二日酔いになりやすいお酒</div>`;sortedH.forEach(([n,v])=>{const p=Math.round(v.hangover/v.total*100);html+=drinkBarHtml(n,p,p>=50?'#E24B4A':'#06d6a0');});}
+  if(sortedM.length){html+=`<div class="section-title" style="margin-top:1.5rem">🧠 記憶をなくしやすいお酒</div>`;sortedM.forEach(([n,v])=>{const p=Math.round(v.memory/v.total*100);html+=drinkBarHtml(n,p,p>=50?'#BA7517':'#06d6a0');});}
+
+  // シーン別分析
+  const sceneRecords=records.filter(r=>r.scene);
+  if(sceneRecords.length>=2){
+    const sceneStats={};
+    sceneRecords.forEach(r=>{
+      if(!sceneStats[r.scene])sceneStats[r.scene]={total:0,bad:0,memoryLost:0,regrets:0};
+      sceneStats[r.scene].total++;
+      if(r.hangover>=2)sceneStats[r.scene].bad++;
+      if(r.memory>=2)sceneStats[r.scene].memoryLost++;
+      if(r.regrets&&r.regrets.length)sceneStats[r.scene].regrets++;
+    });
+    const sortedScenes=Object.entries(sceneStats).filter(([,v])=>v.total>=1).sort(([,a],[,b])=>(b.bad/b.total)-(a.bad/a.total));
+    if(sortedScenes.length){
+      html+=`<div class="section-title" style="margin-top:1.5rem">🎭 シーン別の傾向</div>`;
+      sortedScenes.forEach(([sid,v])=>{
+        const sceneObj=SCENES.find(s=>s.id===sid);
+        if(!sceneObj)return;
+        const hRate=Math.round(v.bad/v.total*100);
+        const mRate=Math.round(v.memoryLost/v.total*100);
+        html+=`<div style="margin-bottom:12px">
+          <div style="font-size:13px;font-weight:700;margin-bottom:6px">${sceneObj.icon} ${sceneObj.label} <span class="muted" style="font-weight:400">（${v.total}回）</span></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:12px">
+            <div style="width:68px;color:var(--text2)">二日酔い</div>
+            <div class="bar-wrap"><div class="bar-fill" style="width:${hRate}%;background:${hRate>=50?'#E24B4A':'#06d6a0'}"></div></div>
+            <div style="width:32px;text-align:right" class="muted">${hRate}%</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <div style="width:68px;color:var(--text2)">記憶なくす</div>
+            <div class="bar-wrap"><div class="bar-fill" style="width:${mRate}%;background:${mRate>=50?'#BA7517':'#06d6a0'}"></div></div>
+            <div style="width:32px;text-align:right" class="muted">${mRate}%</div>
+          </div>
+        </div>`;
+      });
+    }
+  }
+
+  // 後悔ランキング
+  const regretCounts={};
+  records.forEach(r=>{(r.regrets||[]).forEach(id=>{regretCounts[id]=(regretCounts[id]||0)+1;});});
+  const sortedRegrets=Object.entries(regretCounts).sort(([,a],[,b])=>b-a).slice(0,5);
+  if(sortedRegrets.length){
+    html+=`<div class="section-title" style="margin-top:1.5rem">💭 よくある後悔 TOP5</div>`;
+    const maxR=sortedRegrets[0][1];
+    sortedRegrets.forEach(([id,cnt])=>{
+      const rg=REGRETS.find(x=>x.id===id);
+      if(!rg)return;
+      const pct=Math.round(cnt/maxR*100);
+      html+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px">
+        <div style="width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${rg.icon} ${rg.label}</div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:#E24B4A"></div></div>
+        <div style="width:28px;text-align:right" class="muted">${cnt}回</div>
+      </div>`;
+    });
+    html+=`<div class="muted" style="font-size:11px;margin-top:4px">これらを減らすのが節制の近道です</div>`;
+  }
+
+  html+=`<div class="section-title" style="margin-top:1.5rem">🤖 AIアドバイス</div>
+  <div id="ai-advice-area"><button class="big-btn" onclick="getAIAdvice()">データを分析してアドバイスをもらう ✨</button></div>`;
+  el.innerHTML=html;
+}
+
+function renderBadges(){
+  const records=getCurrentLevelRecords();
+  const level=loadLevel();
+  const levelInfo=getLevelInfo(level);
+  const nextLevelInfo=getLevelInfo(level+1);
+  const el=document.getElementById('badges-content');
+  const unlocked=ACHIEVEMENTS.filter(a=>a.check(records,level));
+  const unlockedIds=new Set(unlocked.map(a=>a.id));
+  const categories=[...new Set(ACHIEVEMENTS.map(a=>a.category))];
+  const progress=Math.round(unlocked.length/ACHIEVEMENTS.length*100);
+  const allUnlocked=unlocked.length===ACHIEVEMENTS.length;
+
+  let html=`<div style="background:linear-gradient(135deg,${levelInfo.color},${nextLevelInfo.color});border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;color:#fff;text-align:center;position:relative;overflow:hidden">
+    <div style="font-size:48px;margin-bottom:4px">${levelInfo.icon}</div>
+    <div style="font-size:11px;opacity:0.9;font-weight:700;letter-spacing:0.1em">LEVEL ${level}</div>
+    <div style="font-size:20px;font-weight:700;margin-bottom:2px">${levelInfo.title}</div>
+    <div style="font-size:11px;opacity:0.85;margin-bottom:12px">${levelInfo.desc}</div>
+    <div style="background:rgba(255,255,255,0.3);border-radius:99px;height:10px;overflow:hidden;margin-bottom:6px">
+      <div style="background:#fff;height:100%;width:${progress}%;transition:width 0.5s"></div>
+    </div>
+    <div style="font-size:12px;font-weight:700">${unlocked.length} / ${ACHIEVEMENTS.length} 獲得（${progress}%）</div>
+    ${allUnlocked?`<div style="margin-top:14px"><button onclick="levelUp()" style="background:#fff;color:${levelInfo.color};border:none;border-radius:99px;padding:12px 24px;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px rgba(0,0,0,0.2);animation:badge-pop 0.8s infinite alternate">🎉 レベルアップ！ → ${nextLevelInfo.icon} ${nextLevelInfo.title}</button></div>`:''}
+    <div style="margin-top:10px;font-size:11px;opacity:0.8">次のレベル: ${nextLevelInfo.icon} ${nextLevelInfo.title}</div>
+  </div>`;
+
+  // レベル推移
+  html+=`<div style="display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:1rem;overflow-x:auto">
+    ${[1,2,3,4,5,6,7,8,9,10].map(lv=>{
+      const info=getLevelInfo(lv);
+      const isCurrent=lv===level;
+      const isPast=lv<level;
+      return `<div style="text-align:center;min-width:44px;opacity:${isCurrent?1:isPast?0.8:0.3};${isCurrent?'transform:scale(1.2)':''}">
+        <div style="font-size:${isCurrent?22:16}px">${info.icon}</div>
+        <div style="font-size:9px;font-weight:700;color:${isCurrent?info.color:'var(--text2)'}">Lv${lv}</div>
+      </div>`;
+    }).join('<div style="color:var(--text2);font-size:10px">›</div>')}
+  </div>`;
+
+  categories.forEach(cat=>{
+    const catAchs=ACHIEVEMENTS.filter(a=>a.category===cat);
+    const catUnlocked=catAchs.filter(a=>unlockedIds.has(a.id)).length;
+    html+=`<div class="section-title">${cat} (${catUnlocked}/${catAchs.length})</div>
+      <div class="achievements-grid">
+        ${catAchs.map(a=>{
+          const isUnlocked=unlockedIds.has(a.id);
+          if(isUnlocked){
+            return `<div class="ach-badge unlocked" onclick="showBadgeDetail('${a.id}')"><span class="ach-icon">${a.icon}</span><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div></div>`;
+          } else {
+            return `<div class="ach-badge locked" onclick="showBadgeDetail('${a.id}')"><span class="ach-icon">❓</span><div class="ach-name">？？？</div><div class="ach-desc">タップでヒント</div></div>`;
+          }
+        }).join('')}
+      </div>`;
+  });
+  el.innerHTML=html;
+}
+
+function showBadgeDetail(id){
+  const a=ACHIEVEMENTS.find(x=>x.id===id);
+  if(!a)return;
+  const records=getCurrentLevelRecords();
+  const level=loadLevel();
+  const isUnlocked=a.check(records,level);
+  const hintText=typeof a.hint==='function'?a.hint(level):a.hint;
+  if(isUnlocked){
+    alert(`🏆 ${a.icon} ${a.name}\n\n${a.desc}\n\n【獲得条件（Lv${level}）】\n${hintText}\n\n✅ 獲得済み`);
+  } else {
+    alert(`🔒 ？？？\n\n【獲得条件（Lv${level}）】\n${hintText}\n\n頑張って達成しよう！`);
+  }
+}
+
+// レベルアップ処理
+function levelUp(){
+  const level=loadLevel();
+  const records=getCurrentLevelRecords();
+  const allUnlocked=ACHIEVEMENTS.every(a=>a.check(records,level));
+  if(!allUnlocked){alert('全バッジを獲得してからレベルアップできます');return;}
+  const newLevel=level+1;
+  const newInfo=getLevelInfo(newLevel);
+  saveLevel(newLevel);
+  saveLevelStart(Date.now());
+  // 演出
+  showLevelUpAnimation(newLevel,newInfo);
+}
+
+function showLevelUpAnimation(level,info){
+  const overlay=document.createElement('div');
+  overlay.style.cssText=`position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;animation:fadeIn 0.4s;font-family:var(--font)`;
+  overlay.innerHTML=`<div style="text-align:center;color:#fff;padding:2rem">
+    <div style="font-size:14px;font-weight:700;opacity:0.8;letter-spacing:0.2em;margin-bottom:8px;animation:slide-up 0.6s">LEVEL UP!</div>
+    <div style="font-size:80px;margin-bottom:10px;animation:pop 0.8s">${info.icon}</div>
+    <div style="font-size:32px;font-weight:700;color:${info.color};margin-bottom:6px;animation:slide-up 0.8s">Lv.${level}</div>
+    <div style="font-size:24px;font-weight:700;margin-bottom:4px;animation:slide-up 1s">${info.title}</div>
+    <div style="font-size:13px;opacity:0.8;margin-bottom:24px;animation:slide-up 1.2s">${info.desc}</div>
+    <div style="font-size:12px;opacity:0.7;line-height:1.8;margin-bottom:24px;animation:slide-up 1.4s">
+      新しいバッジが解放されました<br>
+      条件も厳しくなります。頑張って！
+    </div>
+    <button onclick="this.parentElement.parentElement.remove();homeTab('badges');" style="background:${info.color};color:#fff;border:none;border-radius:99px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);animation:slide-up 1.6s">次のレベルへ</button>
+  </div>
+  <style>
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes pop{0%{transform:scale(0) rotate(-20deg)}70%{transform:scale(1.3) rotate(10deg)}100%{transform:scale(1) rotate(0)}}
+    @keyframes slide-up{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+  </style>`;
+  document.body.appendChild(overlay);
+}
+
+function renderSettings(){
+  const el=document.getElementById('settings-content');
+  const softRatio=loadSoftRatio();
+  const thresholds=loadThresholds();
+  const goal=loadGoal();
+  const records=load();
+  const rec=records.length>=3;
+
+  // AI推奨値を計算
+  const recommendation=calcRecommendedSettings(records);
+
+  let html='';
+
+  // AI推奨カード
+  if(rec){
+    const diffSoft=recommendation.softRatio!==softRatio;
+    const diffT=JSON.stringify(recommendation.thresholds)!==JSON.stringify(thresholds);
+    const hasChange=diffSoft||diffT;
+    html+=`<div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem;color:#fff">
+      <div style="font-size:13px;font-weight:700;opacity:0.9;margin-bottom:10px">🤖 あなたのデータに基づくAI推奨設定</div>
+      <div style="font-size:13px;line-height:1.8;margin-bottom:12px" id="ai-rec-text">${recommendation.comment}</div>
+      <div style="background:rgba(255,255,255,0.15);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;line-height:1.9">
+        <div>💧 ソフトドリンク：<b>お酒${recommendation.softRatio}杯に1回</b>${!diffSoft?' <span style="opacity:0.7">（現在と同じ）</span>':''}</div>
+        <div>🍻 いい感じ〜：<b>${recommendation.thresholds.lv1}杯〜</b>${recommendation.thresholds.lv1===thresholds.lv1?' <span style="opacity:0.7">（現在と同じ）</span>':''}</div>
+        <div>😵 やばいかも：<b>${recommendation.thresholds.lv2}杯〜</b>${recommendation.thresholds.lv2===thresholds.lv2?' <span style="opacity:0.7">（現在と同じ）</span>':''}</div>
+        <div>💀 助けて：<b>${recommendation.thresholds.lv3}杯〜</b>${recommendation.thresholds.lv3===thresholds.lv3?' <span style="opacity:0.7">（現在と同じ）</span>':''}</div>
+        <div>☠️ ホラー：<b>${recommendation.thresholds.lv4}杯〜</b>${recommendation.thresholds.lv4===thresholds.lv4?' <span style="opacity:0.7">（現在と同じ）</span>':''}</div>
+      </div>
+      ${hasChange
+        ? `<button onclick="applyRecommendation()" style="width:100%;padding:12px;background:#fff;color:#4a35c0;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">✨ この設定を適用する</button>`
+        : `<div style="text-align:center;font-size:13px;opacity:0.85;padding:8px 0">✅ 現在の設定はすでに最適です！</div>`
+      }
+    </div>`;
+  } else {
+    html+=`<div class="card" style="margin-bottom:1.25rem;text-align:center;padding:1.5rem">
+      <div style="font-size:22px;margin-bottom:8px">🤖</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px">AI推奨設定</div>
+      <div class="muted" style="font-size:12px">飲み会を3回以上記録するとあなたのデータに基づいた最適な設定を提案します</div>
+    </div>`;
+  }
+
+  html+=`<div class="section-title">💧 ソフトドリンクアラート</div>
+    <div class="card">
+      <div style="font-size:13px;margin-bottom:10px">飲み会中にソフトドリンクを挟むように通知する頻度</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="muted" style="white-space:nowrap;font-size:12px">お酒</span>
+        <input type="range" id="s-soft" min="1" max="6" step="1" value="${softRatio}" oninput="updateSettingSoft(this.value)" style="flex:1">
+        <span style="font-weight:700;font-size:14px;min-width:70px;color:#085041" id="s-soft-label">${softRatio}杯に1回</span>
+      </div>
+      <div class="muted" style="margin-top:6px;font-size:11px">過去のデータから最適な比率が学習されている場合はそちらが優先されます</div>
+    </div>
+
+    <div class="section-title" style="margin-top:1.5rem">🎨 UI変化の閾値</div>
+    <div class="card">
+      <div style="font-size:13px;margin-bottom:14px">お酒(ソフト除く)を何杯飲んだらUIが変化するか</div>
+
+      <div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span style="font-weight:700">🍻 いい感じ〜</span>
+          <span style="color:#7a5a00;font-weight:700" id="s-lv1-label">${thresholds.lv1}杯〜</span>
+        </div>
+        <input type="range" id="s-lv1" min="1" max="6" step="1" value="${thresholds.lv1}" oninput="updateThreshold('lv1',this.value)" style="width:100%">
+      </div>
+
+      <div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span style="font-weight:700;color:#c0392b">😵 やばいかも</span>
+          <span style="color:#c0392b;font-weight:700" id="s-lv2-label">${thresholds.lv2}杯〜</span>
+        </div>
+        <input type="range" id="s-lv2" min="2" max="10" step="1" value="${thresholds.lv2}" oninput="updateThreshold('lv2',this.value)" style="width:100%">
+      </div>
+
+      <div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span style="font-weight:700;color:#8b0000">💀 助けて</span>
+          <span style="color:#8b0000;font-weight:700" id="s-lv3-label">${thresholds.lv3}杯〜</span>
+        </div>
+        <input type="range" id="s-lv3" min="3" max="15" step="1" value="${thresholds.lv3}" oninput="updateThreshold('lv3',this.value)" style="width:100%">
+      </div>
+
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span style="font-weight:700;color:#500">☠️ ﾔﾊﾞｲ</span>
+          <span style="color:#500;font-weight:700" id="s-lv4-label">${thresholds.lv4}杯〜</span>
+        </div>
+        <input type="range" id="s-lv4" min="4" max="20" step="1" value="${thresholds.lv4}" oninput="updateThreshold('lv4',this.value)" style="width:100%">
+      </div>
+
+      <button class="big-btn" onclick="resetThresholds()" style="margin-top:8px;font-size:13px;padding:10px">デフォルトに戻す (3/5/7/10)</button>
+    </div>
+
+    <div class="section-title" style="margin-top:1.5rem">🎯 月の目標</div>
+    <div class="card">
+      <div style="font-size:13px;margin-bottom:10px">月の飲み会回数の上限</div>
+      <div class="goal-row">
+        <input type="number" min="0" max="99" value="${goal||''}" placeholder="—" oninput="updateGoal(this.value)" style="width:80px;font-size:16px;padding:8px;border:2px solid var(--border);border-radius:10px;text-align:center;outline:none;background:var(--surface);color:var(--text);font-family:var(--font)">
+        <span class="muted">回/月まで</span>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top:1.5rem">💝 大切な人の写真</div>
+    <div class="card">
+      <div style="font-size:13px;margin-bottom:6px">飲みすぎそうになったら、大切な人の写真が表示されます</div>
+      <div class="muted" style="font-size:11px;margin-bottom:12px">配偶者・恋人・子供・ペットなど、あなたが「このために節制したい」と思う存在の写真をアップロードしましょう。純アルコール40g超で表示されます。</div>
+      <div id="photos-grid-container"></div>
+      <div class="muted" style="font-size:11px;margin-top:8px">写真はこの端末にのみ保存されます（外部送信なし）</div>
+    </div>
+
+    <div class="section-title" style="margin-top:1.5rem">💾 データ</div>
+    <div class="card">
+      <button class="big-btn" onclick="exportData()" style="font-size:13px;padding:10px;margin-bottom:8px">📥 JSONエクスポート</button>
+      <button class="big-btn" onclick="confirmResetData()" style="font-size:13px;padding:10px;background:#fff0ef;color:#a32d2d;border-color:#ffaaa5">🗑️ 全データを削除</button>
+    </div>`;
+  el.innerHTML=html;
+  renderPhotosGrid();
+}
+
+function renderPhotosGrid(){
+  const container=document.getElementById('photos-grid-container');
+  if(!container)return;
+  const photos=loadPhotos();
+  const level=loadLevel();
+  const maxSlots=getMaxPhotoSlots(level);
+  const totalSlots=Math.min(10,Math.max(3,maxSlots)); // 表示は最低3、最大10
+  let html=`<div class="photos-grid">`;
+  for(let i=0;i<totalSlots;i++){
+    if(i<photos.length){
+      // 既存の写真
+      html+=`<div class="photo-slot filled">
+        <img src="${photos[i].data}" alt="">
+        <button class="photo-slot-delete" onclick="deletePhoto(${i})">✕</button>
+      </div>`;
+    } else if(i<maxSlots){
+      // 空きスロット（アップロード可能）
+      html+=`<label class="photo-slot" for="photo-upload-${i}">
+        <span class="photo-slot-plus">+</span>
+        <span class="photo-slot-label">写真を追加</span>
+        <input type="file" id="photo-upload-${i}" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
+      </label>`;
+    } else {
+      // ロック（レベル不足）
+      const unlockLevel=i+1;
+      html+=`<div class="photo-slot locked">
+        <span class="photo-slot-plus">🔒</span>
+        <span class="photo-slot-label">Lv${unlockLevel}で<br>解放</span>
+      </div>`;
+    }
+  }
+  html+=`</div>`;
+  html+=`<div class="muted" style="font-size:11px;margin-top:8px;text-align:center">現在の枠: ${photos.length}/${maxSlots}枠（レベル${level}）</div>`;
+  container.innerHTML=html;
+}
+
+function handlePhotoUpload(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  // 圧縮してbase64化
+  const reader=new FileReader();
+  reader.onload=(ev)=>{
+    const img=new Image();
+    img.onload=()=>{
+      // 最大幅800pxにリサイズ
+      const maxW=800;
+      const ratio=Math.min(1,maxW/img.width);
+      const w=Math.round(img.width*ratio);
+      const h=Math.round(img.height*ratio);
+      const canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const data=canvas.toDataURL('image/jpeg',0.8);
+      const photos=loadPhotos();
+      const msg=prompt('この写真に添えるメッセージを入力（空欄OK）\n例：あなたが帰りを待ってます / パパ早く帰ってきて','');
+      photos.push({data,message:msg||'',addedAt:Date.now()});
+      try{
+        savePhotos(photos);
+        renderPhotosGrid();
+      }catch(err){
+        alert('写真の保存に失敗しました。枚数を減らすか、小さい写真を使ってください。');
+      }
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function deletePhoto(idx){
+  if(!confirm('この写真を削除しますか？'))return;
+  const photos=loadPhotos();
+  photos.splice(idx,1);
+  savePhotos(photos);
+  renderPhotosGrid();
+}
+
+// 分析データから推奨設定を計算する
+function calcRecommendedSettings(records){
+  if(records.length<3)return null;
+
+  // --- ソフトドリンク推奨頻度 ---
+  // 「二日酔いなし」の日のソフト比率の平均から逆算
+  const goodRecs=records.filter(r=>r.hangover<=1);
+  const badRecs=records.filter(r=>r.hangover>=2);
+  const getAvgSoftRatio=recs=>{
+    const valid=recs.filter(r=>{
+      const ac=Object.entries(r.drinkCounts||{}).filter(([n])=>!SOFT_DRINKS.has(n)).reduce((s,[,c])=>s+c,0);
+      return ac>0;
+    });
+    if(!valid.length)return null;
+    const ratios=valid.map(r=>{
+      const ac=Object.entries(r.drinkCounts||{}).filter(([n])=>!SOFT_DRINKS.has(n)).reduce((s,[,c])=>s+c,0);
+      const sc=r.drinkCounts?.['ソフトドリンク']||0;
+      return ac>0?sc/ac:0;
+    });
+    return ratios.reduce((a,b)=>a+b,0)/ratios.length;
+  };
+  const goodRatio=getAvgSoftRatio(goodRecs);
+  let recSoftRatio=3; // デフォルト
+  let softComment='';
+  if(goodRatio!==null&&goodRatio>0){
+    // 推奨: 良かった日の比率を参考に「お酒X杯に1杯」を丸める
+    const perCup=Math.round(1/goodRatio);
+    recSoftRatio=Math.max(1,Math.min(6,perCup));
+    softComment=`二日酔いにならなかった日は平均してお酒約${recSoftRatio}杯に1杯のペースでソフトドリンクを挟んでいます。`;
+  } else if(badRecs.length>goodRecs.length){
+    recSoftRatio=2;
+    softComment='二日酔いになる日が多めです。もっと積極的にソフトドリンクを挟んでみましょう。';
+  } else {
+    softComment='まだソフトドリンクのデータが少ないためデフォルトを推奨しています。';
+  }
+
+  // --- UI閾値の推奨 ---
+  // 「二日酔いなし」グループと「二日酔いあり」グループの平均杯数から境界を推定
+  const avgCupsOf=recs=>recs.filter(r=>r.alco>0).reduce((s,r)=>{
+    const ac=Object.entries(r.drinkCounts||{}).filter(([n])=>!SOFT_DRINKS.has(n)).reduce((sum,[,c])=>sum+c,0);
+    return s+ac;
+  },0)/Math.max(1,recs.filter(r=>r.alco>0).length);
+
+  const goodAvg=Math.round(avgCupsOf(goodRecs));
+  const badAvg=Math.round(avgCupsOf(badRecs));
+
+  // 境界: 良い日の平均 を lv2（やばいかも）の閾値に
+  // lv1はその2/3、lv3はbadAvgに近い値、lv4はさらに上
+  let recT={...DEFAULT_THRESHOLDS};
+  let thresholdComment='';
+
+  if(goodRecs.length>=2&&badAvg>0&&goodAvg>0){
+    const boundary=Math.round((goodAvg+badAvg)/2);
+    recT.lv1=Math.max(2,Math.min(goodAvg-1,4));
+    recT.lv2=Math.max(recT.lv1+1,Math.min(boundary,8));
+    recT.lv3=Math.max(recT.lv2+1,Math.min(badAvg,12));
+    recT.lv4=Math.max(recT.lv3+1,Math.min(badAvg+2,18));
+    thresholdComment=`あなたの場合、${goodAvg}杯前後が「問題なし」と「二日酔い」の境界です。${recT.lv2}杯あたりで早めに警告が出るよう調整しました。`;
+  } else if(goodRecs.length>=2){
+    recT.lv2=Math.max(3,Math.min(goodAvg,7));
+    recT.lv1=Math.max(2,recT.lv2-2);
+    recT.lv3=recT.lv2+2;
+    recT.lv4=recT.lv3+2;
+    thresholdComment=`二日酔いなしの日は平均${goodAvg}杯前後です。それを基準にUIの変化タイミングを調整しました。`;
+  } else {
+    thresholdComment='データがまだ少ないためデフォルト設定を推奨しています。記録を重ねると精度が上がります。';
+  }
+
+  const comment=softComment+' '+thresholdComment;
+  return{softRatio:recSoftRatio,thresholds:recT,comment};
+}
+
+function applyRecommendation(){
+  const records=load();
+  const rec=calcRecommendedSettings(records);
+  if(!rec)return;
+  saveSoftRatio(rec.softRatio);
+  saveThresholds(rec.thresholds);
+  lastAppliedCups=-1;
+  renderSettings();
+  // スクロールをトップに
+  document.getElementById('settings-content').scrollTop=0;
+  // 適用完了のフィードバック
+  const btn=document.querySelector('#settings-content button[onclick="applyRecommendation()"]');
+  if(btn){btn.textContent='✅ 適用しました！';btn.disabled=true;setTimeout(()=>renderSettings(),1500);}
+}
+
+function updateSettingSoft(v){
+  saveSoftRatio(parseInt(v));
+  document.getElementById('s-soft-label').textContent=v+'杯に1回';
+}
+
+function updateThreshold(key,v){
+  const t=loadThresholds();
+  t[key]=parseInt(v);
+  // 順序整合性: lv1<lv2<lv3<lv4
+  if(key==='lv1'&&t.lv1>=t.lv2)t.lv2=t.lv1+1;
+  if(key==='lv2'&&t.lv2>=t.lv3)t.lv3=t.lv2+1;
+  if(key==='lv3'&&t.lv3>=t.lv4)t.lv4=t.lv3+1;
+  if(key==='lv2'&&t.lv2<=t.lv1)t.lv1=t.lv2-1;
+  if(key==='lv3'&&t.lv3<=t.lv2)t.lv2=t.lv3-1;
+  if(key==='lv4'&&t.lv4<=t.lv3)t.lv3=t.lv4-1;
+  saveThresholds(t);
+  // ラベル・スライダー更新
+  ['lv1','lv2','lv3','lv4'].forEach(k=>{
+    const sl=document.getElementById('s-'+k);const lb=document.getElementById('s-'+k+'-label');
+    if(sl)sl.value=t[k];if(lb)lb.textContent=t[k]+'杯〜';
+  });
+  lastAppliedCups=-1; // 次回の描画で反映
+}
+
+function resetThresholds(){
+  saveThresholds({...DEFAULT_THRESHOLDS});
+  renderSettings();
+  lastAppliedCups=-1;
+}
+
+function confirmResetData(){
+  if(!confirm('全ての記録データを削除します。この操作は取り消せません。本当に削除しますか？'))return;
+  if(!confirm('本当に本当に削除しますか？'))return;
+  localStorage.removeItem(DRINKS_KEY);
+  localStorage.removeItem(SESSION_KEY);
+  alert('データを削除しました');
+  location.reload();
+}
+
+function updateGoal(val){
+  const v=parseInt(val)||0;saveGoal(v);
+  const records=load();const thisMonth=new Date().toISOString().slice(0,7).replace('-','/');
+  const monthMap={};records.forEach(r=>{const mk=getMonthKey(r.date);if(mk)monthMap[mk]=(monthMap[mk]||0)+1;});
+  const cnt=monthMap[thisMonth]||0;const pct=v?Math.min(100,Math.round(cnt/v*100)):0;
+  const color=pct>=100?'#E24B4A':pct>=70?'#EF9F27':'#06d6a0';
+  const bar=document.getElementById('goal-bar');if(bar){bar.style.width=pct+'%';bar.style.background=color;}
+}
+
+function drinkBarHtml(name,pct,color){
+  return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px">
+    <div style="width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${name}</div>
+    <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
+    <div style="width:36px;text-align:right" class="muted">${pct}%</div>
+  </div>`;
+}
+
+async function getAIAdvice(){
+  const records=load();if(!records.length)return;
+  const area=document.getElementById('ai-advice-area');
+  area.innerHTML=`<div class="ai-loading"><div class="dot-flashing"><span></span><span></span><span></span></div> 分析中...</div>`;
+  const total=records.length;
+  const badH=records.filter(r=>r.hangover>=2).length;
+  const badM=records.filter(r=>r.memory>=2).length;
+  const avgAlco=records.filter(r=>r.alco).length?Math.round(records.filter(r=>r.alco).reduce((s,r)=>s+r.alco,0)/records.filter(r=>r.alco).length):0;
+  const drinkMap={};records.forEach(r=>{Object.entries(r.drinkCounts).forEach(([n])=>{drinkMap[n]=(drinkMap[n]||0)+1;});});
+  const topDrinks=Object.entries(drinkMap).sort(([,a],[,b])=>b-a).slice(0,3).map(([n])=>n).join('・');
+  const wR=Math.round(records.filter(r=>r.extras?.water).length/total*100);
+  const fR=Math.round(records.filter(r=>r.extras?.food).length/total*100);
+  const sc=records.filter(r=>r.drinkCounts?.['ソフトドリンク']).length;
+  const sHR=sc?Math.round(records.filter(r=>r.drinkCounts?.['ソフトドリンク']&&r.hangover>=2).length/sc*100):null;
+  const nsc=records.filter(r=>!r.drinkCounts?.['ソフトドリンク']).length;
+  const nsHR=nsc?Math.round(records.filter(r=>!r.drinkCounts?.['ソフトドリンク']&&r.hangover>=2).length/nsc*100):null;
+  const prompt=`あなたは飲み会の健康アドバイザーです。以下のデータをもとに、ユーザーへの具体的なアドバイスを日本語で3〜4文で書いてください。フレンドリーで簡潔に。\n\n【データ】\n- 記録回数: ${total}回\n- 二日酔い率: ${Math.round(badH/total*100)}%\n- 記憶喪失率: ${Math.round(badM/total*100)}%\n- 平均アルコール量: ${avgAlco}g/回\n- よく飲むお酒: ${topDrinks||'不明'}\n- 水分補給率: ${wR}%\n- 食事あり率: ${fR}%${sHR!==null?'\n- ソフトドリンクあり日の二日酔い率: '+sHR+'%':''}${nsHR!==null?'\n- ソフトドリンクなし日の二日酔い率: '+nsHR+'%':''}\n\n「〇〇さんのデータを見ると、」から始めないでください。ソフトドリンクを挟む効果についても言及してください。`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    const text=data?.content?.[0]?.text||'アドバイスを取得できませんでした。';
+    area.innerHTML=`<div class="ai-card"><div class="ai-label">🤖 AIアドバイス</div>${text.split('\n').filter(Boolean).map(l=>`<p style="margin-bottom:8px">${l}</p>`).join('')}<div style="text-align:right;margin-top:10px"><button class="export-btn" onclick="getAIAdvice()">再分析 🔄</button></div></div>`;
+  }catch(e){
+    area.innerHTML=`<div class="muted" style="text-align:center;padding:1rem">取得に失敗しました</div><button class="big-btn" onclick="getAIAdvice()">再試行</button>`;
+  }
 }
 
 init();
